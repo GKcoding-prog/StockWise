@@ -1,0 +1,34 @@
+{
+  "app": {
+    "name": "StockWise",
+    "tagline": "Sachez ce que vous avez. Sachez ce que vous perdez. Sachez ce qu'il faut acheter."
+  },
+  "nav": {
+    "home": "Accueil"
+  },
+  "language": {
+    "label": "Langue",
+    "fr": "Français",
+    "en": "English"
+  },
+  "home": {
+    "title": "Bienvenue sur StockWise",
+    "intro": "Le socle technique est en place. Les modules (produits, achats, ventes, stock) arrivent phase par phase.",
+    "nextSteps": "Prochaine étape : authentification et gestion des produits (phase 2)."
+  },
+  "system": {
+    "title": "État du système",
+    "api": "API",
+    "database": "Base de données",
+    "checking": "Vérification…",
+    "up": "Opérationnel",
+    "down": "Indisponible",
+    "unreachable": "Impossible de joindre l'API. Est-elle démarrée (pnpm dev) ?",
+    "retry": "Réessayer",
+    "checkedAt": "Vérifié le {{time}}"
+  },
+  "notFound": {
+    "title": "Page introuvable",
+    "back": "Retour à l'accueil"
+  }
+}

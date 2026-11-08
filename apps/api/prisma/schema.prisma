@@ -1,0 +1,740 @@
+// =============================================================================
+// StockWise — Prisma schema (MVP, v0.1)
+//
+// Conventions
+//  - Every business-owned row carries `businessId`. Services never accept it from
+//    the client; it comes from the authenticated tenant context.
+//  - Quantities: Decimal(14,3) so products sold by weight/volume are possible.
+//    Products with allowFractional = false are validated as whole numbers.
+//  - Money: Decimal(18,2) for amounts, Decimal(18,4) for unit costs (weighted
+//    average cost produces fractions). Currency is the business currency.
+//  - Timestamps are stored in UTC (timestamptz). "Today" is computed in the
+//    business timezone.
+//  - StockMovement is append-only (enforced by a DB trigger in a raw migration:
+//    prisma/sql/integrity_guards.sql). StockLevel is the derived balance, updated in the
+//    same transaction as the movement.
+//  - Archive, don't delete: business data uses `archivedAt`.
+// =============================================================================
+
+generator client {
+  provider        = "prisma-client"
+  output          = "../src/generated/prisma"
+  moduleFormat    = "cjs"
+  previewFeatures = ["partialIndexes", "postgresqlExtensions"]
+}
+
+// The connection URL lives in prisma.config.ts (Prisma 7).
+datasource db {
+  provider   = "postgresql"
+  extensions = [pg_trgm]
+}
+
+// ----------------------------------------------------------------------------
+// Enums
+// ----------------------------------------------------------------------------
+
+enum PlanTier {
+  STARTER
+  BUSINESS
+  PRO
+}
+
+enum MembershipStatus {
+  ACTIVE
+  SUSPENDED
+}
+
+enum PurchaseStatus {
+  DRAFT
+  ORDERED // "pending" in the brief
+  PARTIALLY_RECEIVED
+  RECEIVED
+  CANCELLED
+}
+
+enum SaleStatus {
+  COMPLETED
+  PARTIALLY_RETURNED
+  RETURNED
+  VOIDED
+}
+
+enum PaymentMethod {
+  CASH
+  MOBILE_MONEY
+  BANK_TRANSFER
+  CARD
+  OTHER
+}
+
+enum MovementType {
+  OPENING_BALANCE // initial stock when a product is created / imported
+  PURCHASE_RECEIPT // goods received against a purchase
+  SALE // sale completed
+  SALE_VOID // full reversal of a sale (controlled procedure)
+  CUSTOMER_RETURN // customer brings items back
+  SUPPLIER_RETURN // items sent back to supplier
+  ADJUSTMENT // manual correction, incl. stock-count differences
+  WRITE_OFF // damaged or expired goods
+  TRANSFER_OUT // later: multi-location
+  TRANSFER_IN // later: multi-location
+}
+
+enum DocumentKind {
+  SALE
+  PURCHASE
+  ADJUSTMENT
+  TRANSFER
+}
+
+enum AlertType {
+  LOW_STOCK
+  OUT_OF_STOCK
+  UNUSUAL_ADJUSTMENT
+  PURCHASE_OVERDUE
+  EXPIRY_APPROACHING
+}
+
+enum AlertSeverity {
+  INFO
+  WARNING
+  CRITICAL
+}
+
+enum AlertStatus {
+  OPEN
+  ACKNOWLEDGED
+  RESOLVED
+}
+
+// ----------------------------------------------------------------------------
+// Identity, tenancy, access control
+// ----------------------------------------------------------------------------
+
+model User {
+  id              String    @id @default(uuid()) @db.Uuid
+  email           String    @unique // stored lower-cased
+  passwordHash    String
+  fullName        String
+  phone           String?
+  locale          String    @default("fr") // UI language preference: "fr" | "en"
+  emailVerifiedAt DateTime? @db.Timestamptz(6)
+  isActive        Boolean   @default(true)
+  lastLoginAt     DateTime? @db.Timestamptz(6)
+  createdAt       DateTime  @default(now()) @db.Timestamptz(6)
+  updatedAt       DateTime  @updatedAt @db.Timestamptz(6)
+
+  memberships         BusinessMembership[] @relation("MemberUser")
+  invitedMemberships  BusinessMembership[] @relation("MemberInvitedBy")
+  refreshTokens       RefreshToken[]
+  passwordResetTokens PasswordResetToken[]
+  invitationsSent     Invitation[]         @relation("InvitationSender")
+  stockMovements      StockMovement[]
+  purchasesCreated    Purchase[]           @relation("PurchaseCreatedBy")
+  salesMade           Sale[]               @relation("SaleSoldBy")
+  salesVoided         Sale[]               @relation("SaleVoidedBy")
+  alertsAcknowledged  Alert[]              @relation("AlertAcknowledgedBy")
+  notifications       Notification[]
+  auditLogs           AuditLog[]
+
+  @@map("users")
+}
+
+/// Refresh-token sessions with rotation. Only a hash of the token is stored.
+/// `familyId` groups rotated tokens; reuse of a rotated token revokes the family.
+model RefreshToken {
+  id           String    @id @default(uuid()) @db.Uuid
+  userId       String    @db.Uuid
+  businessId   String?   @db.Uuid // active business for this session
+  tokenHash    String    @unique
+  familyId     String    @db.Uuid
+  expiresAt    DateTime  @db.Timestamptz(6)
+  revokedAt    DateTime? @db.Timestamptz(6)
+  replacedById String?   @db.Uuid
+  userAgent    String?
+  ipAddress    String?
+  createdAt    DateTime  @default(now()) @db.Timestamptz(6)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([familyId])
+  @@map("refresh_tokens")
+}
+
+model PasswordResetToken {
+  id        String    @id @default(uuid()) @db.Uuid
+  userId    String    @db.Uuid
+  tokenHash String    @unique
+  expiresAt DateTime  @db.Timestamptz(6)
+  usedAt    DateTime? @db.Timestamptz(6)
+  createdAt DateTime  @default(now()) @db.Timestamptz(6)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("password_reset_tokens")
+}
+
+model Business {
+  id        String   @id @default(uuid()) @db.Uuid
+  name      String
+  legalName String?
+  taxId     String? // NIF
+  phone     String?
+  email     String?
+  address   String?
+  city      String?
+  country   String   @default("BI") @db.Char(2)
+  currency  String   @default("BIF") @db.Char(3) // ISO 4217
+  locale    String   @default("fr") // default language for documents/reports
+  timezone  String   @default("Africa/Bujumbura") // IANA
+  plan      PlanTier @default(STARTER)
+  /// Validated by a Zod schema (BusinessSettings) — analysis windows, thresholds,
+  /// employee discount limit, allowNegativeStock, etc. See docs/04.
+  settings  Json     @default("{}")
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @db.Timestamptz(6)
+
+  memberships         BusinessMembership[]
+  roles               Role[]
+  invitations         Invitation[]
+  warehouses          Warehouse[]
+  categories          Category[]
+  suppliers           Supplier[]
+  products            Product[]
+  stockLevels         StockLevel[]
+  stockMovements      StockMovement[]
+  batches             ProductBatch[]
+  purchases           Purchase[]
+  purchaseItems       PurchaseItem[]
+  sales               Sale[]
+  saleItems           SaleItem[]
+  documentSequences   DocumentSequence[]
+  alerts              Alert[]
+  notifications       Notification[]
+  auditLogs           AuditLog[]
+  inventorySnapshots  InventorySnapshot[]
+
+  @@map("businesses")
+}
+
+/// System roles (OWNER, MANAGER, EMPLOYEE) have businessId = null and are seeded.
+/// Custom per-business roles (Pro plan, later) set businessId.
+model Role {
+  id          String   @id @default(uuid()) @db.Uuid
+  businessId  String?  @db.Uuid
+  key         String // "OWNER" | "MANAGER" | "EMPLOYEE" | custom slug
+  name        String
+  isSystem    Boolean  @default(false)
+  createdAt   DateTime @default(now()) @db.Timestamptz(6)
+
+  business    Business?            @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  permissions RolePermission[]
+  memberships BusinessMembership[]
+  invitations Invitation[]
+
+  @@unique([businessId, key])
+  @@unique([key], where: raw("\"businessId\" IS NULL"), map: "roles_system_key_unique")
+  @@map("roles")
+}
+
+model Permission {
+  id          String @id @default(uuid()) @db.Uuid
+  key         String @unique // e.g. "sales.create" — see docs/03
+  description String
+
+  roles RolePermission[]
+
+  @@map("permissions")
+}
+
+model RolePermission {
+  roleId       String @db.Uuid
+  permissionId String @db.Uuid
+
+  role       Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@id([roleId, permissionId])
+  @@map("role_permissions")
+}
+
+model BusinessMembership {
+  id          String           @id @default(uuid()) @db.Uuid
+  businessId  String           @db.Uuid
+  userId      String           @db.Uuid
+  roleId      String           @db.Uuid
+  status      MembershipStatus @default(ACTIVE)
+  invitedById String?          @db.Uuid
+  joinedAt    DateTime         @default(now()) @db.Timestamptz(6)
+  updatedAt   DateTime         @updatedAt @db.Timestamptz(6)
+
+  business  Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  user      User     @relation("MemberUser", fields: [userId], references: [id], onDelete: Cascade)
+  role      Role     @relation(fields: [roleId], references: [id])
+  invitedBy User?    @relation("MemberInvitedBy", fields: [invitedById], references: [id])
+
+  @@unique([businessId, userId])
+  @@index([userId])
+  @@map("business_memberships")
+}
+
+model Invitation {
+  id          String    @id @default(uuid()) @db.Uuid
+  businessId  String    @db.Uuid
+  email       String
+  roleId      String    @db.Uuid
+  tokenHash   String    @unique
+  invitedById String    @db.Uuid
+  expiresAt   DateTime  @db.Timestamptz(6)
+  acceptedAt  DateTime? @db.Timestamptz(6)
+  revokedAt   DateTime? @db.Timestamptz(6)
+  createdAt   DateTime  @default(now()) @db.Timestamptz(6)
+
+  business  Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  role      Role     @relation(fields: [roleId], references: [id])
+  invitedBy User     @relation("InvitationSender", fields: [invitedById], references: [id])
+
+  @@index([businessId, email])
+  @@map("invitations")
+}
+
+// ----------------------------------------------------------------------------
+// Catalogue
+// ----------------------------------------------------------------------------
+
+model Warehouse {
+  id         String    @id @default(uuid()) @db.Uuid
+  businessId String    @db.Uuid
+  name       String
+  code       String // short code, e.g. "MAIN"
+  address    String?
+  isDefault  Boolean   @default(false) // exactly one per business (partial unique index below)
+  archivedAt DateTime? @db.Timestamptz(6)
+  createdAt  DateTime  @default(now()) @db.Timestamptz(6)
+  updatedAt  DateTime  @updatedAt @db.Timestamptz(6)
+
+  business           Business            @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  stockLevels        StockLevel[]
+  stockMovements     StockMovement[]
+  batches            ProductBatch[]
+  purchases          Purchase[]
+  sales              Sale[]
+  inventorySnapshots InventorySnapshot[]
+
+  @@unique([businessId, code])
+  @@unique([businessId], where: raw("\"isDefault\""), map: "warehouses_one_default_per_business")
+  @@map("warehouses")
+}
+
+model Category {
+  id         String    @id @default(uuid()) @db.Uuid
+  businessId String    @db.Uuid
+  name       String
+  parentId   String?   @db.Uuid
+  archivedAt DateTime? @db.Timestamptz(6)
+  createdAt  DateTime  @default(now()) @db.Timestamptz(6)
+  updatedAt  DateTime  @updatedAt @db.Timestamptz(6)
+
+  business Business   @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  parent   Category?  @relation("CategoryTree", fields: [parentId], references: [id])
+  children Category[] @relation("CategoryTree")
+  products Product[]
+
+  @@unique([businessId, name])
+  @@map("categories")
+}
+
+model Supplier {
+  id           String    @id @default(uuid()) @db.Uuid
+  businessId   String    @db.Uuid
+  name         String
+  contactName  String?
+  phone        String?
+  email        String?
+  address      String?
+  city         String?
+  country      String?   @db.Char(2)
+  taxId        String?
+  leadTimeDays Int       @default(7) // typical days from order to delivery
+  notes        String?
+  archivedAt   DateTime? @db.Timestamptz(6)
+  createdAt    DateTime  @default(now()) @db.Timestamptz(6)
+  updatedAt    DateTime  @updatedAt @db.Timestamptz(6)
+
+  business  Business   @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  products  Product[]
+  purchases Purchase[]
+
+  @@unique([businessId, name])
+  @@map("suppliers")
+}
+
+/// Note: there is deliberately NO `quantity` column here. Stock lives in
+/// StockLevel (per warehouse) and is changed only through StockMovement.
+model Product {
+  id                   String    @id @default(uuid()) @db.Uuid
+  businessId           String    @db.Uuid
+  sku                  String
+  barcode              String?
+  name                 String
+  description          String?
+  categoryId           String?   @db.Uuid
+  defaultSupplierId    String?   @db.Uuid
+  unit                 String    @default("pcs") // pcs, kg, l, box...
+  allowFractional      Boolean   @default(false)
+  purchasePrice        Decimal   @default(0) @db.Decimal(18, 4) // reference / last cost
+  sellingPrice         Decimal   @default(0) @db.Decimal(18, 2)
+  minStockLevel        Decimal   @default(0) @db.Decimal(14, 3) // low-stock threshold
+  targetStockLevel     Decimal?  @db.Decimal(14, 3) // optional override for reorder qty
+  reorderMultiple      Decimal?  @db.Decimal(14, 3) // pack size; recommendations round up
+  leadTimeDaysOverride Int? // overrides supplier lead time
+  trackExpiry          Boolean   @default(false)
+  imageUrl             String?
+  archivedAt           DateTime? @db.Timestamptz(6)
+  createdAt            DateTime  @default(now()) @db.Timestamptz(6)
+  updatedAt            DateTime  @updatedAt @db.Timestamptz(6)
+
+  business        Business        @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  category        Category?       @relation(fields: [categoryId], references: [id])
+  defaultSupplier Supplier?       @relation(fields: [defaultSupplierId], references: [id])
+  stockLevels     StockLevel[]
+  stockMovements  StockMovement[]
+  batches         ProductBatch[]
+  purchaseItems   PurchaseItem[]
+  saleItems       SaleItem[]
+  alerts          Alert[]
+
+  @@unique([businessId, sku])
+  @@unique([businessId, barcode])
+  @@index([businessId, categoryId])
+  @@index([businessId, name])
+  @@index([name(ops: raw("gin_trgm_ops"))], type: Gin, map: "products_name_trgm")
+  @@index([sku(ops: raw("gin_trgm_ops"))], type: Gin, map: "products_sku_trgm")
+  @@map("products")
+}
+
+// ----------------------------------------------------------------------------
+// Inventory core
+// ----------------------------------------------------------------------------
+
+/// Derived balance per product per warehouse. Updated ONLY by the stock engine
+/// (InventoryService) inside the same transaction that inserts the movement.
+model StockLevel {
+  id             String    @id @default(uuid()) @db.Uuid
+  businessId     String    @db.Uuid
+  productId      String    @db.Uuid
+  warehouseId    String    @db.Uuid
+  quantityOnHand Decimal   @default(0) @db.Decimal(14, 3)
+  averageCost    Decimal   @default(0) @db.Decimal(18, 4) // weighted average cost
+  lastMovementAt DateTime? @db.Timestamptz(6)
+  version        Int       @default(0)
+  updatedAt      DateTime  @updatedAt @db.Timestamptz(6)
+
+  business  Business  @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  product   Product   @relation(fields: [productId], references: [id])
+  warehouse Warehouse @relation(fields: [warehouseId], references: [id])
+
+  @@unique([productId, warehouseId])
+  @@index([businessId, warehouseId])
+  @@map("stock_levels")
+}
+
+/// Append-only ledger: the source of truth for stock.
+/// quantityChange is signed (+ in, − out). quantityAfter = quantityBefore + quantityChange.
+model StockMovement {
+  id               String       @id @default(uuid()) @db.Uuid
+  seq              BigInt       @unique @default(autoincrement()) // global insert order
+  businessId       String       @db.Uuid
+  productId        String       @db.Uuid
+  warehouseId      String       @db.Uuid
+  type             MovementType
+  quantityChange   Decimal      @db.Decimal(14, 3)
+  quantityBefore   Decimal      @db.Decimal(14, 3)
+  quantityAfter    Decimal      @db.Decimal(14, 3)
+  unitCost         Decimal      @db.Decimal(18, 4) // cost per unit of this movement
+  averageCostAfter Decimal      @db.Decimal(18, 4) // WAC after applying it (historic valuation)
+  reason           String? // required for ADJUSTMENT, WRITE_OFF, returns, voids
+  documentRef      String? // e.g. ADJ-2026-000012 groups lines of one adjustment
+  userId           String       @db.Uuid
+  purchaseId       String?      @db.Uuid
+  purchaseItemId   String?      @db.Uuid
+  saleId           String?      @db.Uuid
+  saleItemId       String?      @db.Uuid
+  batchId          String?      @db.Uuid
+  reversalOfId     String?      @unique @db.Uuid // a movement can be reversed at most once
+  transferId       String?      @db.Uuid // later: pairs TRANSFER_OUT / TRANSFER_IN
+  isFlagged        Boolean      @default(false) // set by anomaly detection
+  occurredAt       DateTime     @default(now()) @db.Timestamptz(6)
+  createdAt        DateTime     @default(now()) @db.Timestamptz(6)
+
+  business     Business       @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  product      Product        @relation(fields: [productId], references: [id])
+  warehouse    Warehouse      @relation(fields: [warehouseId], references: [id])
+  user         User           @relation(fields: [userId], references: [id])
+  purchase     Purchase?      @relation(fields: [purchaseId], references: [id])
+  purchaseItem PurchaseItem?  @relation(fields: [purchaseItemId], references: [id])
+  sale         Sale?          @relation(fields: [saleId], references: [id])
+  saleItem     SaleItem?      @relation(fields: [saleItemId], references: [id])
+  batch        ProductBatch?  @relation(fields: [batchId], references: [id])
+  reversalOf   StockMovement? @relation("MovementReversal", fields: [reversalOfId], references: [id])
+  reversedBy   StockMovement? @relation("MovementReversal")
+  alerts       Alert[]
+
+  @@index([businessId, productId, occurredAt])
+  @@index([businessId, type, occurredAt])
+  @@index([businessId, occurredAt])
+  @@index([saleId])
+  @@index([purchaseId])
+  @@map("stock_movements")
+}
+
+/// Optional batch / expiry tracking (only for products with trackExpiry = true).
+/// Planned for Phase 5 / post-pilot; included now so movements can reference it.
+model ProductBatch {
+  id                String    @id @default(uuid()) @db.Uuid
+  businessId        String    @db.Uuid
+  productId         String    @db.Uuid
+  warehouseId       String    @db.Uuid
+  batchNumber       String?
+  expiryDate        DateTime? @db.Date
+  quantityRemaining Decimal   @default(0) @db.Decimal(14, 3)
+  receivedAt        DateTime  @default(now()) @db.Timestamptz(6)
+  purchaseItemId    String?   @db.Uuid
+
+  business       Business        @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  product        Product         @relation(fields: [productId], references: [id])
+  warehouse      Warehouse       @relation(fields: [warehouseId], references: [id])
+  purchaseItem   PurchaseItem?   @relation(fields: [purchaseItemId], references: [id])
+  stockMovements StockMovement[]
+
+  @@index([businessId, expiryDate])
+  @@index([productId, warehouseId])
+  @@map("product_batches")
+}
+
+/// Per-business, per-year counters for human-readable references
+/// (SAL-2026-000123). Incremented with a row lock inside the document's transaction.
+model DocumentSequence {
+  businessId String       @db.Uuid
+  kind       DocumentKind
+  year       Int
+  nextValue  Int          @default(1)
+
+  business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+
+  @@id([businessId, kind, year])
+  @@map("document_sequences")
+}
+
+// ----------------------------------------------------------------------------
+// Purchases & sales
+// ----------------------------------------------------------------------------
+
+model Purchase {
+  id           String         @id @default(uuid()) @db.Uuid
+  businessId   String         @db.Uuid
+  reference    String // PUR-2026-000042
+  supplierId   String         @db.Uuid
+  warehouseId  String         @db.Uuid
+  status       PurchaseStatus @default(DRAFT)
+  orderedAt    DateTime?      @db.Timestamptz(6)
+  expectedAt   DateTime?      @db.Timestamptz(6) // orderedAt + lead time by default
+  receivedAt   DateTime?      @db.Timestamptz(6) // when fully received
+  cancelledAt  DateTime?      @db.Timestamptz(6)
+  cancelReason String?
+  notes        String?
+  total        Decimal        @default(0) @db.Decimal(18, 2)
+  createdById  String         @db.Uuid
+  createdAt    DateTime       @default(now()) @db.Timestamptz(6)
+  updatedAt    DateTime       @updatedAt @db.Timestamptz(6)
+
+  business       Business        @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  supplier       Supplier        @relation(fields: [supplierId], references: [id])
+  warehouse      Warehouse       @relation(fields: [warehouseId], references: [id])
+  createdBy      User            @relation("PurchaseCreatedBy", fields: [createdById], references: [id])
+  items          PurchaseItem[]
+  stockMovements StockMovement[]
+  alerts         Alert[]
+
+  @@unique([businessId, reference])
+  @@index([businessId, status])
+  @@index([businessId, supplierId])
+  @@map("purchases")
+}
+
+model PurchaseItem {
+  id               String  @id @default(uuid()) @db.Uuid
+  businessId       String  @db.Uuid
+  purchaseId       String  @db.Uuid
+  productId        String  @db.Uuid
+  quantityOrdered  Decimal @db.Decimal(14, 3)
+  quantityReceived Decimal @default(0) @db.Decimal(14, 3)
+  unitCost         Decimal @db.Decimal(18, 4)
+  lineTotal        Decimal @db.Decimal(18, 2)
+
+  business       Business        @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  purchase       Purchase        @relation(fields: [purchaseId], references: [id], onDelete: Cascade)
+  product        Product         @relation(fields: [productId], references: [id])
+  stockMovements StockMovement[]
+  batches        ProductBatch[]
+
+  @@unique([purchaseId, productId])
+  @@index([businessId, productId])
+  @@map("purchase_items")
+}
+
+model Sale {
+  id             String        @id @default(uuid()) @db.Uuid
+  businessId     String        @db.Uuid
+  reference      String // SAL-2026-000123
+  warehouseId    String        @db.Uuid
+  status         SaleStatus    @default(COMPLETED)
+  customerName   String?
+  subtotal       Decimal       @db.Decimal(18, 2)
+  discountTotal  Decimal       @default(0) @db.Decimal(18, 2)
+  total          Decimal       @db.Decimal(18, 2)
+  paymentMethod  PaymentMethod
+  amountTendered Decimal?      @db.Decimal(18, 2)
+  soldById       String        @db.Uuid
+  soldAt         DateTime      @default(now()) @db.Timestamptz(6)
+  voidedAt       DateTime?     @db.Timestamptz(6)
+  voidedById     String?       @db.Uuid
+  voidReason     String?
+  idempotencyKey String? // from Idempotency-Key header; prevents double sales on retry
+  createdAt      DateTime      @default(now()) @db.Timestamptz(6)
+
+  business       Business        @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  warehouse      Warehouse       @relation(fields: [warehouseId], references: [id])
+  soldBy         User            @relation("SaleSoldBy", fields: [soldById], references: [id])
+  voidedBy       User?           @relation("SaleVoidedBy", fields: [voidedById], references: [id])
+  items          SaleItem[]
+  stockMovements StockMovement[]
+
+  @@unique([businessId, reference])
+  @@unique([businessId, idempotencyKey])
+  @@index([businessId, soldAt])
+  @@index([businessId, soldById, soldAt])
+  @@map("sales")
+}
+
+model SaleItem {
+  id               String  @id @default(uuid()) @db.Uuid
+  businessId       String  @db.Uuid
+  saleId           String  @db.Uuid
+  productId        String  @db.Uuid
+  quantity         Decimal @db.Decimal(14, 3)
+  unitPrice        Decimal @db.Decimal(18, 2) // price actually charged before discount
+  discountAmount   Decimal @default(0) @db.Decimal(18, 2)
+  lineTotal        Decimal @db.Decimal(18, 2)
+  unitCost         Decimal @db.Decimal(18, 4) // WAC snapshot at sale time (COGS)
+  quantityReturned Decimal @default(0) @db.Decimal(14, 3)
+
+  business       Business        @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  sale           Sale            @relation(fields: [saleId], references: [id], onDelete: Cascade)
+  product        Product         @relation(fields: [productId], references: [id])
+  stockMovements StockMovement[]
+
+  @@index([businessId, productId])
+  @@index([saleId])
+  @@map("sale_items")
+}
+
+// ----------------------------------------------------------------------------
+// Alerts, notifications, audit, analytics support
+// ----------------------------------------------------------------------------
+
+/// A business-level condition (e.g. "Sugar 1kg is low"). Deduplicated: at most one
+/// non-resolved alert per (businessId, dedupeKey) — partial unique index below.
+/// Text is NOT stored; the UI renders `type` + `params` in the user's language.
+model Alert {
+  id               String        @id @default(uuid()) @db.Uuid
+  businessId       String        @db.Uuid
+  type             AlertType
+  severity         AlertSeverity @default(WARNING)
+  status           AlertStatus   @default(OPEN)
+  dedupeKey        String // e.g. "LOW_STOCK:<productId>:<warehouseId>"
+  params           Json          @default("{}") // numbers used in the message / explanation
+  productId        String?       @db.Uuid
+  stockMovementId  String?       @db.Uuid
+  purchaseId       String?       @db.Uuid
+  firstDetectedAt  DateTime      @default(now()) @db.Timestamptz(6)
+  lastDetectedAt   DateTime      @default(now()) @db.Timestamptz(6)
+  acknowledgedById String?       @db.Uuid
+  acknowledgedAt   DateTime?     @db.Timestamptz(6)
+  resolvedAt       DateTime?     @db.Timestamptz(6)
+  resolutionNote   String?
+
+  business       Business       @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  product        Product?       @relation(fields: [productId], references: [id])
+  stockMovement  StockMovement? @relation(fields: [stockMovementId], references: [id])
+  purchase       Purchase?      @relation(fields: [purchaseId], references: [id])
+  acknowledgedBy User?          @relation("AlertAcknowledgedBy", fields: [acknowledgedById], references: [id])
+  notifications  Notification[]
+
+  @@index([businessId, status, type])
+  @@unique([businessId, dedupeKey], where: raw("status <> 'RESOLVED'"), map: "alerts_one_open_per_condition")
+  @@map("alerts")
+}
+
+/// Per-user inbox entry (bell icon). Usually points at an Alert.
+model Notification {
+  id         String    @id @default(uuid()) @db.Uuid
+  businessId String    @db.Uuid
+  userId     String    @db.Uuid
+  alertId    String?   @db.Uuid
+  type       String // mirrors AlertType or other events, e.g. "INVITATION_ACCEPTED"
+  params     Json      @default("{}")
+  readAt     DateTime? @db.Timestamptz(6)
+  createdAt  DateTime  @default(now()) @db.Timestamptz(6)
+
+  business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  alert    Alert?   @relation(fields: [alertId], references: [id], onDelete: SetNull)
+
+  @@index([userId, businessId, readAt])
+  @@map("notifications")
+}
+
+/// Who did what to which record. Append-only (DB trigger), like StockMovement.
+model AuditLog {
+  id         String   @id @default(uuid()) @db.Uuid
+  businessId String?  @db.Uuid // null for pre-tenant events (e.g. failed login)
+  userId     String?  @db.Uuid
+  action     String // "product.update", "auth.login_failed", "membership.role_change"...
+  entityType String?
+  entityId   String?
+  before     Json?
+  after      Json?
+  ipAddress  String?
+  userAgent  String?
+  createdAt  DateTime @default(now()) @db.Timestamptz(6)
+
+  business Business? @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  user     User?     @relation(fields: [userId], references: [id])
+
+  @@index([businessId, createdAt])
+  @@index([businessId, entityType, entityId])
+  @@index([businessId, userId, createdAt])
+  @@map("audit_logs")
+}
+
+/// Nightly closing snapshot per warehouse, used for the "inventory trend" chart.
+/// Derived data: can always be rebuilt from stock_movements.
+model InventorySnapshot {
+  id            String   @id @default(uuid()) @db.Uuid
+  businessId    String   @db.Uuid
+  warehouseId   String   @db.Uuid
+  date          DateTime @db.Date // business-local date
+  productCount  Int
+  totalQuantity Decimal  @db.Decimal(18, 3)
+  totalValue    Decimal  @db.Decimal(18, 2)
+  createdAt     DateTime @default(now()) @db.Timestamptz(6)
+
+  business  Business  @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  warehouse Warehouse @relation(fields: [warehouseId], references: [id])
+
+  @@unique([businessId, warehouseId, date])
+  @@map("inventory_snapshots")
+}

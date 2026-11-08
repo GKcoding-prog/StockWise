@@ -1,0 +1,15 @@
+packages:
+  - apps/*
+  - packages/*
+
+# Packages allowed to run install scripts (pnpm blocks them by default).
+onlyBuiltDependencies:
+  - '@nestjs/core'
+  - '@prisma/engines'
+  - esbuild
+  - prisma
+
+# Install scripts we deliberately don't run (telemetry / optional native watcher).
+ignoredBuiltDependencies:
+  - '@parcel/watcher'
+  - '@scarf/scarf'

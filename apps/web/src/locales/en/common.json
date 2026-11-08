@@ -1,0 +1,34 @@
+{
+  "app": {
+    "name": "StockWise",
+    "tagline": "Know what you have. Know what you are losing. Know what you need to purchase."
+  },
+  "nav": {
+    "home": "Home"
+  },
+  "language": {
+    "label": "Language",
+    "fr": "Français",
+    "en": "English"
+  },
+  "home": {
+    "title": "Welcome to StockWise",
+    "intro": "The technical foundation is in place. Modules (products, purchases, sales, stock) arrive phase by phase.",
+    "nextSteps": "Next: authentication and product management (phase 2)."
+  },
+  "system": {
+    "title": "System status",
+    "api": "API",
+    "database": "Database",
+    "checking": "Checking…",
+    "up": "Operational",
+    "down": "Unavailable",
+    "unreachable": "Can't reach the API. Is it running (pnpm dev)?",
+    "retry": "Retry",
+    "checkedAt": "Checked {{time}}"
+  },
+  "notFound": {
+    "title": "Page not found",
+    "back": "Back to home"
+  }
+}
