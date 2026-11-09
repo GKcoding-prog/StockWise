@@ -1,0 +1,35 @@
+{
+  "title": "Fournisseurs",
+  "subtitle": "Vos fournisseurs et leurs délais de livraison.",
+  "new": "Nouveau fournisseur",
+  "searchPlaceholder": "Rechercher par nom, contact ou téléphone",
+  "leadTime_one": "Livre en {{count}} jour",
+  "leadTime_other": "Livre en {{count}} jours",
+  "productCount_one": "{{count}} produit",
+  "productCount_other": "{{count}} produits",
+  "empty": {
+    "title": "Aucun fournisseur",
+    "text": "Ajoutez vos fournisseurs pour suivre vos achats et leurs délais."
+  },
+  "form": {
+    "createTitle": "Nouveau fournisseur",
+    "editTitle": "Modifier le fournisseur",
+    "leadTimeHint": "Nombre de jours habituel entre la commande et la livraison."
+  },
+  "fields": {
+    "name": "Nom",
+    "contactName": "Personne de contact",
+    "phone": "Téléphone",
+    "email": "E-mail",
+    "nif": "NIF",
+    "address": "Adresse",
+    "leadTimeDays": "Délai de livraison (jours)",
+    "notes": "Notes"
+  },
+  "contact": "Contact",
+  "openPurchases_one": "{{count}} commande en cours",
+  "openPurchases_other": "{{count}} commandes en cours",
+  "products": "Produits fournis",
+  "noProducts": "Aucun produit",
+  "noProductsText": "Choisissez ce fournisseur comme fournisseur habituel dans la fiche d’un produit."
+}

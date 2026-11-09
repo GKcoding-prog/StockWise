@@ -1,0 +1,78 @@
+{
+  "title": "Paramètres",
+  "tabs": {
+    "profile": "Mon profil",
+    "business": "Entreprise",
+    "categories": "Catégories"
+  },
+  "profile": {
+    "title": "Mon profil",
+    "phone": "Téléphone"
+  },
+  "password": {
+    "title": "Mot de passe",
+    "text": "Changer le mot de passe déconnecte vos autres appareils.",
+    "current": "Mot de passe actuel",
+    "new": "Nouveau mot de passe",
+    "submit": "Changer le mot de passe"
+  },
+  "sessions": {
+    "title": "Sessions",
+    "text": "Déconnectez-vous de tous les appareils, par exemple après la perte d’un téléphone.",
+    "submit": "Se déconnecter partout"
+  },
+  "business": {
+    "profile": "Profil de l’entreprise",
+    "name": "Nom commercial",
+    "legalName": "Raison sociale",
+    "nif": "NIF",
+    "phone": "Téléphone",
+    "email": "E-mail",
+    "address": "Adresse",
+    "currencyHint": "Code ISO, ex. BIF.",
+    "timezone": "Fuseau horaire"
+  },
+  "rules": {
+    "title": "Règles et analyses",
+    "text": "Ces réglages s’appliquent à toute l’entreprise.",
+    "employeeMaxDiscountPercent": "Remise maximale des employés (%)",
+    "employeeMaxDiscountPercentHelp": "Au-delà, seul un gérant ou le propriétaire peut accorder la remise.",
+    "allowNegativeStock": "Autoriser le stock négatif",
+    "allowNegativeStockHelp": "Déconseillé : permet de vendre plus que le stock enregistré.",
+    "analysis": "Recommandations",
+    "salesWindowDays": "Période d’analyse des ventes (jours)",
+    "salesWindowDaysHelp": "Jours de ventes utilisés pour calculer la moyenne.",
+    "safetyStockDays": "Stock de sécurité (jours)",
+    "safetyStockDaysHelp": "Jours de ventes gardés en réserve.",
+    "reviewPeriodDays": "Fréquence de commande (jours)",
+    "reviewPeriodDaysHelp": "Tous les combien de jours vous passez commande.",
+    "slowMovingDays": "Rotation lente après (jours)",
+    "slowMovingDaysHelp": "Période pour repérer les produits qui se vendent peu.",
+    "deadStockDays": "Stock dormant après (jours)",
+    "deadStockDaysHelp": "Sans aucune vente pendant cette durée.",
+    "anomaly": "Ajustements inhabituels",
+    "maxDaysOfSales": "Taille max. (jours de ventes)",
+    "maxDaysOfSalesHelp": "Signaler un ajustement plus grand que N jours de ventes.",
+    "valueThreshold": "Seuil de valeur",
+    "valueThresholdHelp": "Signaler un ajustement de cette valeur ou plus.",
+    "shareOfStockPercent": "Part du stock (%)",
+    "shareOfStockPercentHelp": "Signaler un retrait de ce pourcentage du stock ou plus.",
+    "modifiedZThreshold": "Seuil statistique",
+    "modifiedZThresholdHelp": "Plus bas = plus sensible. 3,5 par défaut.",
+    "perUserDailyNegativeCount": "Retraits par jour et par personne",
+    "perUserDailyNegativeCountHelp": "Signaler au-delà de ce nombre de retraits dans la journée."
+  },
+  "categories": {
+    "new": "Nouvelle catégorie",
+    "createTitle": "Nouvelle catégorie",
+    "editTitle": "Modifier la catégorie",
+    "name": "Nom",
+    "parent": "Catégorie parente",
+    "parentHint": "Optionnel, un seul niveau.",
+    "description": "Description",
+    "emptyTitle": "Aucune catégorie",
+    "emptyText": "Les catégories aident à filtrer les produits et les rapports.",
+    "productCount_one": "{{count}} produit actif",
+    "productCount_other": "{{count}} produits actifs"
+  }
+}

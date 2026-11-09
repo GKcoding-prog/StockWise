@@ -1,0 +1,55 @@
+{
+  "actions": {
+    "close": "Fermer",
+    "retry": "Réessayer",
+    "cancel": "Annuler",
+    "save": "Enregistrer",
+    "edit": "Modifier",
+    "archive": "Archiver",
+    "restore": "Restaurer",
+    "signOut": "Se déconnecter"
+  },
+  "states": {
+    "loading": "Chargement…",
+    "errorTitle": "Impossible de charger ces données",
+    "forbiddenTitle": "Accès non autorisé",
+    "forbiddenText": "Votre rôle ne permet pas d’ouvrir cette page. Demandez au propriétaire si vous en avez besoin.",
+    "saved": "Enregistré"
+  },
+  "stockStatus": {
+    "OK": "En stock",
+    "LOW": "Stock bas",
+    "OUT": "Rupture"
+  },
+  "pagination": {
+    "label": "Pagination",
+    "range": "{{from}}–{{to}} sur {{total}}",
+    "previous": "Précédent",
+    "next": "Suivant"
+  },
+  "nav": {
+    "main": "Navigation principale",
+    "dashboard": "Tableau de bord",
+    "products": "Produits",
+    "inventory": "Stock",
+    "movements": "Mouvements",
+    "suppliers": "Fournisseurs",
+    "settings": "Paramètres",
+    "more": "Plus"
+  },
+  "header": {
+    "switchBusiness": "Changer d’entreprise",
+    "language": "Langue"
+  },
+  "roles": {
+    "OWNER": "Propriétaire",
+    "MANAGER": "Gérant",
+    "EMPLOYEE": "Employé"
+  },
+  "none": "Aucun",
+  "yes": "Oui",
+  "no": "Non",
+  "units": {
+    "days": "jours"
+  }
+}

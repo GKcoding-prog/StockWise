@@ -1,0 +1,54 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: stockwise
+          POSTGRES_PASSWORD: stockwise
+          POSTGRES_DB: stockwise_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U stockwise"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgresql://stockwise:stockwise@localhost:5432/stockwise_test
+      TEST_DATABASE_URL: postgresql://stockwise:stockwise@localhost:5432/stockwise_test
+      JWT_ACCESS_SECRET: ci-only-secret-that-is-at-least-32-characters
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @stockwise/shared build
+      - name: Typecheck
+        run: pnpm typecheck
+      - name: Shared tests
+        run: pnpm --filter @stockwise/shared test
+      - name: Web tests
+        run: pnpm --filter @stockwise/web test
+      - name: API tests (unit + e2e against Postgres, incl. isolation and concurrency suites)
+        run: pnpm --filter @stockwise/api test
+      - name: Build
+        run: pnpm --filter @stockwise/api build && pnpm --filter @stockwise/web build
+      - name: Dependency audit
+        run: pnpm audit --prod --audit-level high
+        continue-on-error: true

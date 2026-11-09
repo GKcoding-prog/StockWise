@@ -1,0 +1,13 @@
+{
+  "decimals2": "Nombre avec au plus 2 décimales",
+  "decimals3": "Nombre avec au plus 3 décimales",
+  "decimals4": "Nombre avec au plus 4 décimales",
+  "notNegative": "Ne peut pas être négatif",
+  "positive": "Doit être supérieur à 0",
+  "dateFormat": "Date invalide",
+  "currency": "Code devise à 3 lettres (ex. BIF)",
+  "timezone": "Fuseau horaire inconnu",
+  "roleOrStatus": "Choisissez un rôle ou un statut",
+  "openingCostRequired": "Indiquez le coût unitaire du stock initial",
+  "oneQuantity": "Indiquez une nouvelle quantité ou une différence"
+}

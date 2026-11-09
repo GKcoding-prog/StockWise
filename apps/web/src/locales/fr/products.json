@@ -1,0 +1,79 @@
+{
+  "title": "Produits",
+  "subtitle": "Votre catalogue, avec le stock en temps réel.",
+  "new": "Nouveau produit",
+  "searchPlaceholder": "Rechercher par nom, code ou code-barres",
+  "archived": "Archivé",
+  "filters": {
+    "allCategories": "Toutes les catégories",
+    "allStatuses": "Tous les statuts",
+    "archived": "Afficher les archivés"
+  },
+  "fields": {
+    "name": "Nom",
+    "sku": "Code article",
+    "barcode": "Code-barres",
+    "category": "Catégorie",
+    "supplier": "Fournisseur habituel",
+    "unit": "Unité",
+    "allowFractional": "Vendu au poids / au volume (décimales)",
+    "description": "Description",
+    "sellingPrice": "Prix de vente",
+    "costPrice": "Prix d’achat",
+    "averageCost": "Coût moyen",
+    "stockValue": "Valeur du stock",
+    "minStockLevel": "Stock minimum",
+    "targetStockLevel": "Stock cible",
+    "reorderMultiple": "Conditionnement (carton, paquet)",
+    "leadTimeDaysOverride": "Délai de livraison (jours)",
+    "leadTime": "Délai de livraison",
+    "onHand": "En stock",
+    "status": "Statut",
+    "openingQuantity": "Quantité initiale",
+    "openingUnitCost": "Coût unitaire"
+  },
+  "empty": {
+    "title": "Aucun produit pour l’instant",
+    "text": "Ajoutez vos produits avec leur stock actuel pour commencer.",
+    "filteredTitle": "Aucun résultat",
+    "filteredText": "Essayez un autre mot ou retirez des filtres."
+  },
+  "form": {
+    "createTitle": "Nouveau produit",
+    "editTitle": "Modifier le produit",
+    "basic": "Informations",
+    "pricing": "Prix",
+    "stockSettings": "Réglages du stock",
+    "openingStock": "Stock initial",
+    "skuHint": "Laissez vide pour un code automatique.",
+    "barcodeHint": "Scannez ou tapez le code.",
+    "unitHint": "pcs, kg, L…",
+    "costHint": "Dernier prix payé au fournisseur.",
+    "minHint": "Alerte « stock bas » à ce niveau.",
+    "targetHint": "Optionnel : quantité visée après réapprovisionnement.",
+    "packHint": "Les commandes suggérées seront arrondies à ce multiple.",
+    "leadTimeHint": "Laissez vide pour utiliser le délai du fournisseur.",
+    "openingHint": "La quantité que vous avez aujourd’hui. Elle sera enregistrée comme mouvement d’ouverture.",
+    "quantityNotEditable": "La quantité en stock ne se modifie pas ici. Utilisez « Ajuster le stock » depuis la fiche produit : chaque changement reste tracé."
+  },
+  "tabs": {
+    "overview": "Aperçu",
+    "movements": "Mouvements"
+  },
+  "detail": {
+    "atAverageCost": "au coût moyen de {{cost}}",
+    "velocity": "Rythme de vente",
+    "velocityHint": "Ventes nettes (ventes − retours − annulations). Historique : {{days}} jours.",
+    "noHistory": "Pas encore de mouvement pour ce produit.",
+    "window": "Période",
+    "netSold": "Vendu",
+    "perDay": "Par jour",
+    "lastDays_one": "Dernier jour",
+    "lastDays_other": "{{count}} derniers jours",
+    "details": "Détails"
+  },
+  "archiveConfirm": {
+    "title": "Archiver ce produit ?",
+    "text": "« {{name}} » disparaîtra des recherches et des ventes. Son historique est conservé et vous pourrez le restaurer."
+  }
+}

@@ -1,0 +1,73 @@
+{
+  "adjust": {
+    "action": "Ajuster le stock",
+    "title": "Ajuster le stock",
+    "submit": "Enregistrer l’ajustement",
+    "current": "Stock actuel",
+    "mode": {
+      "set": "Nouvelle quantité",
+      "change": "Ajouter / retirer"
+    },
+    "newQuantity": "Quantité comptée",
+    "difference": "Différence",
+    "differenceHint": "Ex. 5 pour ajouter, -3 pour retirer.",
+    "preview": "Le stock passera de {{from}} à {{to}}."
+  },
+  "writeOff": {
+    "action": "Perte / casse",
+    "title": "Déclarer une perte",
+    "submit": "Retirer du stock",
+    "quantity": "Quantité perdue",
+    "noteHint": "Expliquez ce qui s’est passé."
+  },
+  "fields": {
+    "reason": "Motif",
+    "note": "Commentaire",
+    "date": "Date",
+    "product": "Produit",
+    "type": "Type",
+    "change": "Variation",
+    "beforeAfter": "Avant → après",
+    "user": "Par",
+    "document": "Document"
+  },
+  "reasons": {
+    "COUNT_CORRECTION": "Correction d’inventaire",
+    "FOUND": "Stock retrouvé",
+    "THEFT_OR_LOSS": "Vol ou perte",
+    "DATA_ENTRY_ERROR": "Erreur de saisie",
+    "DAMAGED": "Endommagé",
+    "EXPIRED": "Périmé",
+    "LOST": "Perdu",
+    "OTHER": "Autre"
+  },
+  "types": {
+    "OPENING_BALANCE": "Stock initial",
+    "PURCHASE_RECEIPT": "Réception",
+    "SUPPLIER_RETURN": "Retour fournisseur",
+    "SALE": "Vente",
+    "SALE_VOID": "Vente annulée",
+    "CUSTOMER_RETURN": "Retour client",
+    "ADJUSTMENT": "Ajustement",
+    "WRITE_OFF": "Perte / casse",
+    "TRANSFER_IN": "Transfert entrant",
+    "TRANSFER_OUT": "Transfert sortant"
+  },
+  "flagged": "Signalé comme inhabituel",
+  "empty": {
+    "movementsTitle": "Aucun mouvement",
+    "movementsText": "Chaque entrée et sortie de stock apparaîtra ici."
+  },
+  "stock": {
+    "title": "Stock",
+    "subtitle": "Quantités en stock et statut de chaque produit."
+  },
+  "movements": {
+    "title": "Mouvements de stock",
+    "subtitle": "L’historique complet : chaque entrée et sortie, qui l’a faite et pourquoi.",
+    "allTypes": "Tous les types",
+    "from": "Du",
+    "to": "Au",
+    "flaggedOnly": "Seulement les signalés"
+  }
+}

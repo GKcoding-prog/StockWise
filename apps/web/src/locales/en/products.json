@@ -1,0 +1,79 @@
+{
+  "title": "Products",
+  "subtitle": "Your catalogue, with live stock.",
+  "new": "New product",
+  "searchPlaceholder": "Search by name, SKU or barcode",
+  "archived": "Archived",
+  "filters": {
+    "allCategories": "All categories",
+    "allStatuses": "All statuses",
+    "archived": "Show archived"
+  },
+  "fields": {
+    "name": "Name",
+    "sku": "SKU",
+    "barcode": "Barcode",
+    "category": "Category",
+    "supplier": "Usual supplier",
+    "unit": "Unit",
+    "allowFractional": "Sold by weight / volume (decimals)",
+    "description": "Description",
+    "sellingPrice": "Selling price",
+    "costPrice": "Purchase price",
+    "averageCost": "Average cost",
+    "stockValue": "Stock value",
+    "minStockLevel": "Minimum stock",
+    "targetStockLevel": "Target stock",
+    "reorderMultiple": "Pack size (case, pack)",
+    "leadTimeDaysOverride": "Delivery lead time (days)",
+    "leadTime": "Delivery lead time",
+    "onHand": "On hand",
+    "status": "Status",
+    "openingQuantity": "Opening quantity",
+    "openingUnitCost": "Unit cost"
+  },
+  "empty": {
+    "title": "No products yet",
+    "text": "Add your products with their current stock to get started.",
+    "filteredTitle": "No results",
+    "filteredText": "Try another word or remove some filters."
+  },
+  "form": {
+    "createTitle": "New product",
+    "editTitle": "Edit product",
+    "basic": "Details",
+    "pricing": "Pricing",
+    "stockSettings": "Stock settings",
+    "openingStock": "Opening stock",
+    "skuHint": "Leave empty for an automatic code.",
+    "barcodeHint": "Scan or type the code.",
+    "unitHint": "pcs, kg, L…",
+    "costHint": "Last price paid to the supplier.",
+    "minHint": "A “low stock” alert fires at this level.",
+    "targetHint": "Optional: the quantity to reach after restocking.",
+    "packHint": "Suggested orders are rounded up to this multiple.",
+    "leadTimeHint": "Leave empty to use the supplier’s lead time.",
+    "openingHint": "What you have today. It’s recorded as an opening movement.",
+    "quantityNotEditable": "Stock quantity isn’t edited here. Use “Adjust stock” on the product page: every change stays traceable."
+  },
+  "tabs": {
+    "overview": "Overview",
+    "movements": "Movements"
+  },
+  "detail": {
+    "atAverageCost": "at an average cost of {{cost}}",
+    "velocity": "Sales velocity",
+    "velocityHint": "Net sales (sales − returns − voids). History: {{days}} days.",
+    "noHistory": "No movements for this product yet.",
+    "window": "Period",
+    "netSold": "Sold",
+    "perDay": "Per day",
+    "lastDays_one": "Last day",
+    "lastDays_other": "Last {{count}} days",
+    "details": "Details"
+  },
+  "archiveConfirm": {
+    "title": "Archive this product?",
+    "text": "“{{name}}” will be hidden from search and sales. Its history is kept and you can restore it."
+  }
+}

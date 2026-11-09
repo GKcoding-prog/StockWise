@@ -20,4 +20,4 @@ Smart Inventory Management and Decision Support System for SMEs in Burundi.
 4. Every recommendation shows its numbers and its confidence. It's an estimate, not a promise.
 5. A feature isn't done until it's tested, translated (FR/EN) and permission-checked.
 
-Status: Phase 1 foundation in the repo (Prisma 7, NestJS 11, React 19). The schema (25 models), integrity guards and demo seed have been tested against PostgreSQL 16. The first migration is created by `pnpm db:init`.
+Status: see the [root README](../README.md#status) for what is built. Migrations (`init` + `integrity_guards`) are committed under `apps/api/prisma/migrations`; `pnpm db:migrate` applies them and `pnpm db:seed` loads the demo shop.

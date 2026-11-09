@@ -1,0 +1,27 @@
+# Local development: only the services the apps need. The API and web run natively (docs/01 §15).
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: stockwise
+      POSTGRES_PASSWORD: stockwise
+      POSTGRES_DB: stockwise
+    ports:
+      - '5433:5432' # 5433 on the host so it doesn't clash with a locally installed Postgres
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./docker/postgres-init.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U stockwise']
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  mailpit:
+    image: axllent/mailpit:latest
+    ports:
+      - '1025:1025' # SMTP
+      - '8025:8025' # Web UI: http://localhost:8025
+
+volumes:
+  pgdata:

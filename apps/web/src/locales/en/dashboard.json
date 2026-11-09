@@ -1,0 +1,19 @@
+{
+  "greeting": "Hello {{name}}",
+  "subtitle": "Here’s where your stock stands today.",
+  "kpi": {
+    "products": "Active products",
+    "low": "Low stock",
+    "out": "Out of stock",
+    "value": "Stock value (average cost)"
+  },
+  "seeAll": "See all",
+  "attention": {
+    "title": "Needs attention",
+    "emptyTitle": "Nothing to report",
+    "emptyText": "No product is out of stock or below its minimum."
+  },
+  "recent": {
+    "title": "Recent movements"
+  }
+}

@@ -1,0 +1,78 @@
+{
+  "title": "Settings",
+  "tabs": {
+    "profile": "My profile",
+    "business": "Business",
+    "categories": "Categories"
+  },
+  "profile": {
+    "title": "My profile",
+    "phone": "Phone"
+  },
+  "password": {
+    "title": "Password",
+    "text": "Changing your password signs out your other devices.",
+    "current": "Current password",
+    "new": "New password",
+    "submit": "Change password"
+  },
+  "sessions": {
+    "title": "Sessions",
+    "text": "Sign out of every device, for example after losing a phone.",
+    "submit": "Sign out everywhere"
+  },
+  "business": {
+    "profile": "Business profile",
+    "name": "Trading name",
+    "legalName": "Legal name",
+    "nif": "Tax ID (NIF)",
+    "phone": "Phone",
+    "email": "Email",
+    "address": "Address",
+    "currencyHint": "ISO code, e.g. BIF.",
+    "timezone": "Time zone"
+  },
+  "rules": {
+    "title": "Rules and analysis",
+    "text": "These settings apply to the whole business.",
+    "employeeMaxDiscountPercent": "Employee maximum discount (%)",
+    "employeeMaxDiscountPercentHelp": "Above this, only a manager or the owner can give the discount.",
+    "allowNegativeStock": "Allow negative stock",
+    "allowNegativeStockHelp": "Not recommended: lets you sell more than recorded stock.",
+    "analysis": "Recommendations",
+    "salesWindowDays": "Sales analysis window (days)",
+    "salesWindowDaysHelp": "Days of sales used for the average.",
+    "safetyStockDays": "Safety stock (days)",
+    "safetyStockDaysHelp": "Days of sales kept as a buffer.",
+    "reviewPeriodDays": "Ordering frequency (days)",
+    "reviewPeriodDaysHelp": "How often you place orders.",
+    "slowMovingDays": "Slow-moving after (days)",
+    "slowMovingDaysHelp": "Period used to spot products that sell little.",
+    "deadStockDays": "Dead stock after (days)",
+    "deadStockDaysHelp": "No sales at all for this long.",
+    "anomaly": "Unusual adjustments",
+    "maxDaysOfSales": "Max size (days of sales)",
+    "maxDaysOfSalesHelp": "Flag an adjustment larger than N days of sales.",
+    "valueThreshold": "Value threshold",
+    "valueThresholdHelp": "Flag an adjustment worth this much or more.",
+    "shareOfStockPercent": "Share of stock (%)",
+    "shareOfStockPercentHelp": "Flag a removal of this share of stock or more.",
+    "modifiedZThreshold": "Statistical threshold",
+    "modifiedZThresholdHelp": "Lower = more sensitive. Default 3.5.",
+    "perUserDailyNegativeCount": "Removals per person per day",
+    "perUserDailyNegativeCountHelp": "Flag beyond this many removals in a day."
+  },
+  "categories": {
+    "new": "New category",
+    "createTitle": "New category",
+    "editTitle": "Edit category",
+    "name": "Name",
+    "parent": "Parent category",
+    "parentHint": "Optional, one level only.",
+    "description": "Description",
+    "emptyTitle": "No categories",
+    "emptyText": "Categories help filter products and reports.",
+    "productCount_one": "{{count}} active product",
+    "productCount_other": "{{count}} active products"
+  }
+}

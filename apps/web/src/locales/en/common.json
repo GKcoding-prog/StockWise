@@ -1,0 +1,55 @@
+{
+  "actions": {
+    "close": "Close",
+    "retry": "Try again",
+    "cancel": "Cancel",
+    "save": "Save",
+    "edit": "Edit",
+    "archive": "Archive",
+    "restore": "Restore",
+    "signOut": "Sign out"
+  },
+  "states": {
+    "loading": "Loading…",
+    "errorTitle": "We couldn’t load this",
+    "forbiddenTitle": "Not allowed",
+    "forbiddenText": "Your role can’t open this page. Ask the owner if you need it.",
+    "saved": "Saved"
+  },
+  "stockStatus": {
+    "OK": "In stock",
+    "LOW": "Low stock",
+    "OUT": "Out of stock"
+  },
+  "pagination": {
+    "label": "Pagination",
+    "range": "{{from}}–{{to}} of {{total}}",
+    "previous": "Previous",
+    "next": "Next"
+  },
+  "nav": {
+    "main": "Main navigation",
+    "dashboard": "Dashboard",
+    "products": "Products",
+    "inventory": "Stock",
+    "movements": "Movements",
+    "suppliers": "Suppliers",
+    "settings": "Settings",
+    "more": "More"
+  },
+  "header": {
+    "switchBusiness": "Switch business",
+    "language": "Language"
+  },
+  "roles": {
+    "OWNER": "Owner",
+    "MANAGER": "Manager",
+    "EMPLOYEE": "Employee"
+  },
+  "none": "None",
+  "yes": "Yes",
+  "no": "No",
+  "units": {
+    "days": "days"
+  }
+}

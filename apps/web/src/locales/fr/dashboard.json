@@ -1,0 +1,19 @@
+{
+  "greeting": "Bonjour {{name}}",
+  "subtitle": "Voici l’état de votre stock aujourd’hui.",
+  "kpi": {
+    "products": "Produits actifs",
+    "low": "En stock bas",
+    "out": "En rupture",
+    "value": "Valeur du stock (coût moyen)"
+  },
+  "seeAll": "Tout voir",
+  "attention": {
+    "title": "À surveiller",
+    "emptyTitle": "Rien à signaler",
+    "emptyText": "Aucun produit n’est en rupture ni sous son seuil minimum."
+  },
+  "recent": {
+    "title": "Derniers mouvements"
+  }
+}

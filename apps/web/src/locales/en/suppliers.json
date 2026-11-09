@@ -1,0 +1,35 @@
+{
+  "title": "Suppliers",
+  "subtitle": "Your suppliers and their delivery lead times.",
+  "new": "New supplier",
+  "searchPlaceholder": "Search by name, contact or phone",
+  "leadTime_one": "Delivers in {{count}} day",
+  "leadTime_other": "Delivers in {{count}} days",
+  "productCount_one": "{{count}} product",
+  "productCount_other": "{{count}} products",
+  "empty": {
+    "title": "No suppliers",
+    "text": "Add your suppliers to track purchases and lead times."
+  },
+  "form": {
+    "createTitle": "New supplier",
+    "editTitle": "Edit supplier",
+    "leadTimeHint": "Usual number of days between ordering and delivery."
+  },
+  "fields": {
+    "name": "Name",
+    "contactName": "Contact person",
+    "phone": "Phone",
+    "email": "Email",
+    "nif": "Tax ID (NIF)",
+    "address": "Address",
+    "leadTimeDays": "Lead time (days)",
+    "notes": "Notes"
+  },
+  "contact": "Contact",
+  "openPurchases_one": "{{count}} open order",
+  "openPurchases_other": "{{count}} open orders",
+  "products": "Products supplied",
+  "noProducts": "No products",
+  "noProductsText": "Choose this supplier as the usual supplier on a product."
+}

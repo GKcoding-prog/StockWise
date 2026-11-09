@@ -1,0 +1,25 @@
+{
+  "name": "stockwise",
+  "private": true,
+  "packageManager": "pnpm@10.34.9",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev": "pnpm --filter @stockwise/shared build && pnpm --parallel --filter @stockwise/api --filter @stockwise/web dev",
+    "build": "pnpm -r build",
+    "lint": "pnpm -r lint",
+    "typecheck": "pnpm -r typecheck",
+    "test": "pnpm -r test",
+    "format": "prettier --write .",
+    "db:up": "docker compose up -d",
+    "db:down": "docker compose down",
+    "db:migrate": "pnpm --filter @stockwise/api db:migrate",
+    "db:reset": "pnpm --filter @stockwise/api db:reset",
+    "db:seed": "pnpm --filter @stockwise/api db:seed"
+  },
+  "devDependencies": {
+    "prettier": "^3.6.2",
+    "typescript": "~5.9.3"
+  }
+}

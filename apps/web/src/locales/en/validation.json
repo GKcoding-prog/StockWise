@@ -1,0 +1,13 @@
+{
+  "decimals2": "A number with at most 2 decimals",
+  "decimals3": "A number with at most 3 decimals",
+  "decimals4": "A number with at most 4 decimals",
+  "notNegative": "Can’t be negative",
+  "positive": "Must be greater than 0",
+  "dateFormat": "Invalid date",
+  "currency": "3-letter currency code (e.g. BIF)",
+  "timezone": "Unknown time zone",
+  "roleOrStatus": "Choose a role or a status",
+  "openingCostRequired": "Enter the unit cost of the opening stock",
+  "oneQuantity": "Enter either a new quantity or a difference"
+}

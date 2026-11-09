@@ -1,0 +1,73 @@
+{
+  "adjust": {
+    "action": "Adjust stock",
+    "title": "Adjust stock",
+    "submit": "Save adjustment",
+    "current": "Current stock",
+    "mode": {
+      "set": "New quantity",
+      "change": "Add / remove"
+    },
+    "newQuantity": "Counted quantity",
+    "difference": "Difference",
+    "differenceHint": "E.g. 5 to add, -3 to remove.",
+    "preview": "Stock will go from {{from}} to {{to}}."
+  },
+  "writeOff": {
+    "action": "Damaged / lost",
+    "title": "Record a loss",
+    "submit": "Remove from stock",
+    "quantity": "Quantity lost",
+    "noteHint": "Explain what happened."
+  },
+  "fields": {
+    "reason": "Reason",
+    "note": "Note",
+    "date": "Date",
+    "product": "Product",
+    "type": "Type",
+    "change": "Change",
+    "beforeAfter": "Before → after",
+    "user": "By",
+    "document": "Document"
+  },
+  "reasons": {
+    "COUNT_CORRECTION": "Count correction",
+    "FOUND": "Found stock",
+    "THEFT_OR_LOSS": "Theft or loss",
+    "DATA_ENTRY_ERROR": "Data entry error",
+    "DAMAGED": "Damaged",
+    "EXPIRED": "Expired",
+    "LOST": "Lost",
+    "OTHER": "Other"
+  },
+  "types": {
+    "OPENING_BALANCE": "Opening stock",
+    "PURCHASE_RECEIPT": "Receipt",
+    "SUPPLIER_RETURN": "Supplier return",
+    "SALE": "Sale",
+    "SALE_VOID": "Voided sale",
+    "CUSTOMER_RETURN": "Customer return",
+    "ADJUSTMENT": "Adjustment",
+    "WRITE_OFF": "Damaged / lost",
+    "TRANSFER_IN": "Transfer in",
+    "TRANSFER_OUT": "Transfer out"
+  },
+  "flagged": "Flagged as unusual",
+  "empty": {
+    "movementsTitle": "No movements",
+    "movementsText": "Every stock in and out will show up here."
+  },
+  "stock": {
+    "title": "Stock",
+    "subtitle": "Quantities on hand and the status of each product."
+  },
+  "movements": {
+    "title": "Stock movements",
+    "subtitle": "The full history: every in and out, who did it and why.",
+    "allTypes": "All types",
+    "from": "From",
+    "to": "To",
+    "flaggedOnly": "Flagged only"
+  }
+}
