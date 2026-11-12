@@ -7,6 +7,8 @@ const EnvSchema = z.object({
   JWT_ACCESS_SECRET: z.string().min(32, 'JWT_ACCESS_SECRET must be at least 32 characters'),
   ACCESS_TOKEN_TTL_SECONDS: z.coerce.number().int().min(60).default(900),
   REFRESH_TOKEN_TTL_DAYS: z.coerce.number().int().min(1).default(14),
+  /** A just-rotated refresh token is accepted again for this long (two tabs, lost responses). */
+  REFRESH_REUSE_GRACE_SECONDS: z.coerce.number().int().min(0).max(300).default(30),
   WEB_ORIGINS: z
     .string()
     .default('http://localhost:5173')

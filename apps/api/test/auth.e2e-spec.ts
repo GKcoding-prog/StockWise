@@ -17,6 +17,16 @@ describe('Auth & sessions (UC-01, UC-02)', () => {
   });
   afterAll(() => t.close());
 
+  const refreshCookieOf = (res: { headers: Record<string, unknown> }) =>
+    (res.headers['set-cookie'] as string[])[0].split(';')[0];
+
+  /** Moves the user's revoked tokens 5 minutes into the past, beyond the reuse grace window. */
+  const agePresentedTokens = (userId: string) =>
+    t.prisma.refreshToken.updateMany({
+      where: { userId, revokedAt: { not: null } },
+      data: { revokedAt: new Date(Date.now() - 5 * 60_000) },
+    });
+
   it('registers a business with a default warehouse and an Owner membership in one go', async () => {
     const owner = await registerOwner(t, 'Alimentation Kira');
     const me = await t.http().get('/api/v1/me').set(auth(owner)).expect(200);
@@ -86,6 +96,8 @@ describe('Auth & sessions (UC-01, UC-02)', () => {
     const rotated = (first.headers['set-cookie'] as unknown as string[])[0].split(';')[0];
     expect(rotated).not.toBe(owner.cookie);
 
+    // Replayed after the grace window: an attacker, not a lost response.
+    await agePresentedTokens(owner.userId);
     const replay = await t
       .http()
       .post('/api/v1/auth/refresh')
@@ -95,6 +107,37 @@ describe('Auth & sessions (UC-01, UC-02)', () => {
 
     // The legitimate successor is now revoked too.
     await t.http().post('/api/v1/auth/refresh').set('Cookie', rotated).expect(401);
+  });
+
+  it('accepts a just-rotated token again when the refresh response was lost', async () => {
+    const owner = await registerOwner(t);
+    // The server rotates, but the browser never receives the new cookie (flaky network)…
+    await t.http().post('/api/v1/auth/refresh').set('Cookie', owner.cookie).expect(200);
+    // …so it retries with the old one: that must not log the user out.
+    const retry = await t
+      .http()
+      .post('/api/v1/auth/refresh')
+      .set('Cookie', owner.cookie)
+      .expect(200);
+    const next = refreshCookieOf(retry);
+    await t.http().post('/api/v1/auth/refresh').set('Cookie', next).expect(200);
+  });
+
+  it('keeps both tabs signed in when they refresh with the same cookie at the same time', async () => {
+    const owner = await registerOwner(t);
+    const results = await Promise.all(
+      [1, 2, 3].map(() => t.http().post('/api/v1/auth/refresh').set('Cookie', owner.cookie)),
+    );
+    expect(results.map((r) => r.status)).toEqual([200, 200, 200]);
+    for (const r of results) {
+      await t.http().post('/api/v1/auth/refresh').set('Cookie', refreshCookieOf(r)).expect(200);
+    }
+  });
+
+  it('gives no grace window to a token revoked by logout', async () => {
+    const owner = await registerOwner(t);
+    await t.http().post('/api/v1/auth/logout').set('Cookie', owner.cookie).expect(204);
+    await t.http().post('/api/v1/auth/refresh').set('Cookie', owner.cookie).expect(401);
   });
 
   it('logs out by revoking the refresh token', async () => {
