@@ -39,7 +39,8 @@
     "DAMAGED": "Damaged",
     "EXPIRED": "Expired",
     "LOST": "Lost",
-    "OTHER": "Other"
+    "OTHER": "Other",
+    "WRONG_ITEM": "Wrong item"
   },
   "types": {
     "OPENING_BALANCE": "Opening stock",

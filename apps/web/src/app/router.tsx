@@ -74,7 +74,39 @@ export const router = createBrowserRouter([
               },
             ],
           },
-          { path: 'settings', element: <Navigate to="/settings/profile" replace /> },
+          {
+            element: <RequirePermission perm="purchases.view" />,
+            children: [
+              {
+                path: 'purchases',
+                ...page(() => import('@/features/purchases/PurchasesPage'), 'PurchasesPage'),
+              },
+              {
+                path: 'purchases/:id',
+                ...page(
+                  () => import('@/features/purchases/PurchaseDetailPage'),
+                  'PurchaseDetailPage',
+                ),
+              },
+            ],
+          },
+          {
+            element: <RequirePermission perm="purchases.manage" />,
+            children: [
+              {
+                path: 'purchases/new',
+                ...page(() => import('@/features/purchases/PurchaseFormPage'), 'PurchaseFormPage'),
+              },
+              {
+                path: 'purchases/:id/edit',
+                ...page(() => import('@/features/purchases/PurchaseFormPage'), 'PurchaseFormPage'),
+              },
+            ],
+          },
+          {
+            path: 'settings',
+            element: <Navigate to="/settings/profile" replace />,
+          },
           {
             path: 'settings/profile',
             ...page(() => import('@/features/settings/ProfilePage'), 'ProfilePage'),

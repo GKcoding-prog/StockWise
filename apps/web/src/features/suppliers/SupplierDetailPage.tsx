@@ -1,16 +1,37 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Archive, ArchiveRestore, ArrowLeft, Mail, MapPin, Pencil, Phone } from 'lucide-react';
+import {
+  Archive,
+  ArchiveRestore,
+  ArrowLeft,
+  Mail,
+  MapPin,
+  Pencil,
+  Phone,
+  Plus,
+} from 'lucide-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link, useParams } from 'react-router';
+import { Link, useNavigate, useParams } from 'react-router';
 import { Can, useBusinessKey, useCan } from '@/app/auth';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { Card, EmptyState, ErrorState, PageHeader, Skeleton } from '@/components/ui/States';
 import { api } from '@/lib/api';
 import { useFormat } from '@/lib/format';
-import type { Supplier } from '@/lib/types';
+import { PurchaseStatusBadge } from '@/features/purchases/PurchaseStatusBadge';
+import type { PurchaseStatus, Supplier } from '@/lib/types';
 import { SupplierFormDialog } from './SupplierFormDialog';
+
+interface SupplierPurchase {
+  id: string;
+  reference: string;
+  status: PurchaseStatus;
+  orderedAt: string | null;
+  expectedAt: string | null;
+  receivedAt: string | null;
+  createdAt: string;
+  total?: string;
+}
 
 interface SupplierProduct {
   id: string;
@@ -26,6 +47,7 @@ export function SupplierDetailPage() {
   const b = useBusinessKey();
   const can = useCan();
   const qc = useQueryClient();
+  const navigate = useNavigate();
   const [editing, setEditing] = useState(false);
 
   const supplier = useQuery({
@@ -36,9 +58,16 @@ export function SupplierDetailPage() {
     queryKey: [b, 'suppliers', 'products', id],
     queryFn: () => api<{ data: SupplierProduct[] }>(`/suppliers/${id}/products`),
   });
+  const purchases = useQuery({
+    queryKey: [b, 'purchases', 'bySupplier', id],
+    queryFn: () => api<{ data: SupplierPurchase[] }>(`/suppliers/${id}/purchases`),
+    enabled: can('purchases.view'),
+  });
   const archive = useMutation({
     mutationFn: (archived: boolean) =>
-      api<Supplier>(`/suppliers/${id}/${archived ? 'archive' : 'restore'}`, { method: 'POST' }),
+      api<Supplier>(`/suppliers/${id}/${archived ? 'archive' : 'restore'}`, {
+        method: 'POST',
+      }),
     onSuccess: () => qc.invalidateQueries({ queryKey: [b, 'suppliers'] }),
   });
 
@@ -78,25 +107,37 @@ export function SupplierDetailPage() {
         }
         description={t('suppliers:leadTime', { count: s.leadTimeDays })}
         actions={
-          <Can perm="suppliers.manage">
-            <Button
-              variant="secondary"
-              icon={<Pencil className="size-4" />}
-              onClick={() => setEditing(true)}
-            >
-              {t('common:actions.edit')}
-            </Button>
-            <Button
-              variant="secondary"
-              icon={
-                archived ? <ArchiveRestore className="size-4" /> : <Archive className="size-4" />
-              }
-              loading={archive.isPending}
-              onClick={() => archive.mutate(!archived)}
-            >
-              {archived ? t('common:actions.restore') : t('common:actions.archive')}
-            </Button>
-          </Can>
+          <>
+            {!archived && (
+              <Can perm="purchases.manage">
+                <Button
+                  icon={<Plus className="size-4" />}
+                  onClick={() => navigate(`/purchases/new?supplierId=${s.id}`)}
+                >
+                  {t('purchases:actions.newForSupplier')}
+                </Button>
+              </Can>
+            )}
+            <Can perm="suppliers.manage">
+              <Button
+                variant="secondary"
+                icon={<Pencil className="size-4" />}
+                onClick={() => setEditing(true)}
+              >
+                {t('common:actions.edit')}
+              </Button>
+              <Button
+                variant="secondary"
+                icon={
+                  archived ? <ArchiveRestore className="size-4" /> : <Archive className="size-4" />
+                }
+                loading={archive.isPending}
+                onClick={() => archive.mutate(!archived)}
+              >
+                {archived ? t('common:actions.restore') : t('common:actions.archive')}
+              </Button>
+            </Can>
+          </>
         }
       />
 
@@ -177,6 +218,46 @@ export function SupplierDetailPage() {
           )}
         </Card>
       </div>
+      <Can perm="purchases.view">
+        <Card className="mt-4">
+          <h2 className="border-b border-stone-200 px-4 py-3 font-semibold">
+            {t('purchases:supplierHistory')}
+          </h2>
+          {purchases.isPending ? (
+            <div className="p-4">
+              <Skeleton className="h-16" />
+            </div>
+          ) : purchases.isError ? (
+            <ErrorState error={purchases.error} onRetry={() => void purchases.refetch()} />
+          ) : purchases.data.data.length === 0 ? (
+            <EmptyState title={t('purchases:noSupplierPurchases')} />
+          ) : (
+            <ul className="divide-y divide-stone-100">
+              {purchases.data.data.map((p) => (
+                <li key={p.id}>
+                  <Link
+                    to={`/purchases/${p.id}`}
+                    className="flex items-center justify-between gap-3 px-4 py-2.5 text-sm hover:bg-stone-50"
+                  >
+                    <span className="flex items-center gap-2">
+                      <span className="font-mono font-medium">{p.reference}</span>
+                      <PurchaseStatusBadge status={p.status} />
+                    </span>
+                    <span className="text-right text-stone-600">
+                      {p.total !== undefined && (
+                        <span className="mr-3 font-medium text-stone-900 tabular">
+                          {f.money(p.total)}
+                        </span>
+                      )}
+                      {f.date(p.receivedAt ?? p.orderedAt ?? p.createdAt)}
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
+        </Card>
+      </Can>
       <SupplierFormDialog open={editing} onClose={() => setEditing(false)} supplier={s} />
     </>
   );

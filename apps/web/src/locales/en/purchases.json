@@ -1,0 +1,113 @@
+{
+  "title": "Purchases",
+  "subtitle": "Orders to suppliers and goods received.",
+  "new": "New purchase",
+  "searchPlaceholder": "Search by reference or supplier",
+  "status": {
+    "ALL": "All",
+    "DRAFT": "Draft",
+    "ORDERED": "Ordered",
+    "PARTIALLY_RECEIVED": "Partly received",
+    "RECEIVED": "Received",
+    "CANCELLED": "Cancelled"
+  },
+  "empty": {
+    "title": "No purchases",
+    "text": "Create an order for a supplier. Stock only goes up when the goods are received.",
+    "filteredTitle": "No purchases match"
+  },
+  "fields": {
+    "status": "Status",
+    "reference": "Reference",
+    "supplier": "Supplier",
+    "expectedAt": "Expected delivery",
+    "expectedAtHint": "Empty: today + the supplier’s lead time.",
+    "notes": "Notes",
+    "product": "Product",
+    "quantityOrdered": "Ordered",
+    "quantityReceived": "Received",
+    "quantityReturned": "Returned",
+    "quantityRemaining": "Remaining",
+    "unitCost": "Unit cost",
+    "lineTotal": "Line total",
+    "total": "Total",
+    "items": "Items",
+    "createdBy": "Created by",
+    "orderedAt": "Ordered",
+    "receivedAt": "Received",
+    "cancelledAt": "Cancelled",
+    "createdAt": "Created"
+  },
+  "itemCount_one": "{{count}} item",
+  "itemCount_other": "{{count}} items",
+  "form": {
+    "createTitle": "New purchase",
+    "editTitle": "Edit {{reference}}",
+    "chooseSupplier": "Choose a supplier",
+    "addProduct": "Add a product",
+    "searchProduct": "Search a product (name, SKU, barcode)",
+    "noProductFound": "No product found",
+    "alreadyAdded": "Already added",
+    "noLines": "Add at least one product.",
+    "removeLine": "Remove {{name}}",
+    "estimatedTotal": "Estimated total",
+    "saveDraft": "Save draft",
+    "saveAndOrder": "Save and mark ordered",
+    "save": "Save"
+  },
+  "actions": {
+    "edit": "Edit",
+    "order": "Mark as ordered",
+    "receive": "Receive goods",
+    "cancel": "Cancel purchase",
+    "return": "Return to supplier",
+    "newForSupplier": "New purchase"
+  },
+  "receive": {
+    "title": "Receive goods",
+    "intro": "Enter the quantities actually delivered. Stock goes up when you confirm.",
+    "received": "Received now",
+    "invoiceCost": "Invoice cost",
+    "costHint": "Change it if the invoice differs from the order.",
+    "receiveAll": "All remaining",
+    "receiveNone": "None",
+    "summary_one": "{{count}} product will be added to stock.",
+    "summary_other": "{{count}} products will be added to stock.",
+    "nothing": "Enter at least one quantity.",
+    "submit": "Confirm receipt"
+  },
+  "cancel": {
+    "title": "Cancel {{reference}}?",
+    "text": "The order will be closed. Nothing is removed from stock.",
+    "partialText": "The part not yet received will be dropped. Goods already received stay in stock.",
+    "reason": "Reason",
+    "submit": "Cancel purchase",
+    "keep": "Keep it"
+  },
+  "return": {
+    "title": "Return to supplier",
+    "intro": "Returned quantities leave your stock.",
+    "returnable": "Returnable",
+    "quantity": "To return",
+    "reason": "Reason",
+    "note": "Note",
+    "nothing": "Enter at least one quantity.",
+    "submit": "Confirm return",
+    "reasons": {
+      "DAMAGED": "Damaged",
+      "WRONG_ITEM": "Wrong item",
+      "EXPIRED": "Expired",
+      "OTHER": "Other"
+    }
+  },
+  "detail": {
+    "lines": "Items ordered",
+    "movements": "Stock movements",
+    "noMovements": "No goods received yet.",
+    "cancelReason": "Cancellation reason",
+    "partiallyCancelled": "Cancelled after a partial receipt",
+    "overdue": "Overdue"
+  },
+  "supplierHistory": "Purchases",
+  "noSupplierPurchases": "No purchases from this supplier yet."
+}
