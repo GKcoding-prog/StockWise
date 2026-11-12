@@ -8,3 +8,4 @@ export * from './schemas/auth';
 export * from './schemas/business';
 export * from './schemas/catalogue';
 export * from './schemas/inventory';
+export * from './schemas/purchases';

@@ -18,6 +18,7 @@ import { CategoriesModule } from './modules/categories/categories.module';
 import { HealthModule } from './modules/health/health.controller';
 import { InventoryModule } from './modules/inventory/inventory.module';
 import { ProductsModule } from './modules/products/products.module';
+import { PurchasesModule } from './modules/purchases/purchases.module';
 import { SuppliersModule } from './modules/suppliers/suppliers.module';
 import { WarehousesModule } from './modules/warehouses/warehouses.controller';
 import { PrismaModule } from './prisma/prisma.module';
@@ -56,6 +57,7 @@ import { PrismaModule } from './prisma/prisma.module';
     SuppliersModule,
     InventoryModule,
     ProductsModule,
+    PurchasesModule,
     AnalyticsModule,
   ],
   providers: [

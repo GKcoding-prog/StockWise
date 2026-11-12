@@ -1,0 +1,113 @@
+{
+  "title": "Achats",
+  "subtitle": "Commandes aux fournisseurs et réceptions de marchandises.",
+  "new": "Nouvel achat",
+  "searchPlaceholder": "Rechercher par référence ou fournisseur",
+  "status": {
+    "ALL": "Tous",
+    "DRAFT": "Brouillon",
+    "ORDERED": "Commandé",
+    "PARTIALLY_RECEIVED": "Reçu en partie",
+    "RECEIVED": "Reçu",
+    "CANCELLED": "Annulé"
+  },
+  "empty": {
+    "title": "Aucun achat",
+    "text": "Créez une commande pour un fournisseur. Le stock n’augmente qu’à la réception des marchandises.",
+    "filteredTitle": "Aucun achat ne correspond"
+  },
+  "fields": {
+    "status": "Statut",
+    "reference": "Référence",
+    "supplier": "Fournisseur",
+    "expectedAt": "Livraison prévue",
+    "expectedAtHint": "Vide : aujourd’hui + délai du fournisseur.",
+    "notes": "Notes",
+    "product": "Produit",
+    "quantityOrdered": "Commandé",
+    "quantityReceived": "Reçu",
+    "quantityReturned": "Retourné",
+    "quantityRemaining": "Reste",
+    "unitCost": "Coût unitaire",
+    "lineTotal": "Total ligne",
+    "total": "Total",
+    "items": "Articles",
+    "createdBy": "Créé par",
+    "orderedAt": "Commandé le",
+    "receivedAt": "Reçu le",
+    "cancelledAt": "Annulé le",
+    "createdAt": "Créé le"
+  },
+  "itemCount_one": "{{count}} article",
+  "itemCount_other": "{{count}} articles",
+  "form": {
+    "createTitle": "Nouvel achat",
+    "editTitle": "Modifier {{reference}}",
+    "chooseSupplier": "Choisir un fournisseur",
+    "addProduct": "Ajouter un produit",
+    "searchProduct": "Rechercher un produit (nom, SKU, code-barres)",
+    "noProductFound": "Aucun produit trouvé",
+    "alreadyAdded": "Déjà ajouté",
+    "noLines": "Ajoutez au moins un produit.",
+    "removeLine": "Retirer {{name}}",
+    "estimatedTotal": "Total estimé",
+    "saveDraft": "Enregistrer le brouillon",
+    "saveAndOrder": "Enregistrer et commander",
+    "save": "Enregistrer"
+  },
+  "actions": {
+    "edit": "Modifier",
+    "order": "Marquer comme commandé",
+    "receive": "Réceptionner",
+    "cancel": "Annuler l’achat",
+    "return": "Retour fournisseur",
+    "newForSupplier": "Nouvel achat"
+  },
+  "receive": {
+    "title": "Réceptionner les marchandises",
+    "intro": "Saisissez les quantités réellement reçues. Le stock augmente à la confirmation.",
+    "received": "Reçu maintenant",
+    "invoiceCost": "Coût facture",
+    "costHint": "Modifiez si la facture diffère de la commande.",
+    "receiveAll": "Tout le reste",
+    "receiveNone": "Rien",
+    "summary_one": "{{count}} produit sera ajouté au stock.",
+    "summary_other": "{{count}} produits seront ajoutés au stock.",
+    "nothing": "Saisissez au moins une quantité.",
+    "submit": "Confirmer la réception"
+  },
+  "cancel": {
+    "title": "Annuler {{reference}} ?",
+    "text": "La commande sera fermée. Rien ne sera retiré du stock.",
+    "partialText": "Le reste non reçu sera abandonné. Les marchandises déjà reçues restent en stock.",
+    "reason": "Motif",
+    "submit": "Annuler l’achat",
+    "keep": "Garder"
+  },
+  "return": {
+    "title": "Retour au fournisseur",
+    "intro": "Les quantités retournées sortent du stock.",
+    "returnable": "Retournable",
+    "quantity": "À retourner",
+    "reason": "Motif",
+    "note": "Note",
+    "nothing": "Saisissez au moins une quantité.",
+    "submit": "Confirmer le retour",
+    "reasons": {
+      "DAMAGED": "Endommagé",
+      "WRONG_ITEM": "Mauvais article",
+      "EXPIRED": "Périmé",
+      "OTHER": "Autre"
+    }
+  },
+  "detail": {
+    "lines": "Articles commandés",
+    "movements": "Mouvements de stock",
+    "noMovements": "Aucune marchandise reçue pour l’instant.",
+    "cancelReason": "Motif d’annulation",
+    "partiallyCancelled": "Annulé après une réception partielle",
+    "overdue": "En retard"
+  },
+  "supplierHistory": "Achats",
+  "noSupplierPurchases": "Aucun achat chez ce fournisseur."
+}

@@ -49,13 +49,32 @@ describe('Tenant isolation', () => {
     const movement = await t.prisma.stockMovement.findFirstOrThrow({
       where: { businessId: b.businessId, productId: product.id },
     });
+    const purchase = await t
+      .http()
+      .post('/api/v1/purchases')
+      .set(auth(b))
+      .send({
+        supplierId: supplier.body.id,
+        markOrdered: true,
+        items: [{ productId: product.id, quantityOrdered: '5', unitCost: '100' }],
+      })
+      .expect(201);
     Object.assign(ids, {
       category: category.body.id,
       supplier: supplier.body.id,
       product: product.id,
       movement: movement.id,
+      purchase: purchase.body.id,
+      purchaseItem: purchase.body.items[0].id,
     });
-    await createProduct(t, a, { name: 'A product' });
+    const aProduct = await createProduct(t, a, { name: 'A product' });
+    const aSupplier = await t
+      .http()
+      .post('/api/v1/suppliers')
+      .set(auth(a))
+      .send({ name: 'A supplier' })
+      .expect(201);
+    Object.assign(ids, { aProduct: aProduct.id, aSupplier: aSupplier.body.id });
   });
   afterAll(() => t.close());
 
@@ -190,8 +209,72 @@ describe('Tenant isolation', () => {
     ],
   ];
 
+  const purchaseRows: Row[] = [
+    ['GET /purchases/{purchase}', 'get', () => `/api/v1/purchases/${ids.purchase}`, null],
+    [
+      'GET /purchases/{purchase}/movements',
+      'get',
+      () => `/api/v1/purchases/${ids.purchase}/movements`,
+      null,
+    ],
+    [
+      'PATCH /purchases/{purchase}',
+      'patch',
+      () => `/api/v1/purchases/${ids.purchase}`,
+      () => ({ notes: 'hijack' }),
+    ],
+    [
+      'POST /purchases/{purchase}/order',
+      'post',
+      () => `/api/v1/purchases/${ids.purchase}/order`,
+      null,
+    ],
+    [
+      'POST /purchases/{purchase}/receive',
+      'post',
+      () => `/api/v1/purchases/${ids.purchase}/receive`,
+      () => ({ lines: [{ purchaseItemId: ids.purchaseItem, quantity: '5' }] }),
+    ],
+    [
+      'POST /purchases/{purchase}/cancel',
+      'post',
+      () => `/api/v1/purchases/${ids.purchase}/cancel`,
+      () => ({ reason: 'hijack' }),
+    ],
+    [
+      'POST /purchases/{purchase}/supplier-returns',
+      'post',
+      () => `/api/v1/purchases/${ids.purchase}/supplier-returns`,
+      () => ({ reason: 'OTHER', lines: [{ purchaseItemId: ids.purchaseItem, quantity: '1' }] }),
+    ],
+    [
+      'POST /purchases with their supplier',
+      'post',
+      () => '/api/v1/purchases',
+      () => ({
+        supplierId: ids.supplier,
+        items: [{ productId: ids.aProduct, quantityOrdered: '1', unitCost: '1' }],
+      }),
+    ],
+    [
+      'POST /purchases with their product',
+      'post',
+      () => '/api/v1/purchases',
+      () => ({
+        supplierId: ids.aSupplier,
+        items: [{ productId: ids.product, quantityOrdered: '1', unitCost: '1' }],
+      }),
+    ],
+  ];
+  notFound.push(...purchaseRows);
+
   it.each(notFound)('%s → 404 for another business', async (_label, method, path, body) => {
-    const req = t.http()[method](path()).set(auth(a));
+    // Idempotency-Key is required by some writes; send one everywhere so they reach the lookup.
+    const req = t
+      .http()
+      [method](path())
+      .set(auth(a))
+      .set('Idempotency-Key', `isolation-${Math.random().toString(36).slice(2, 12)}`);
     const res = await (body ? req.send(body()) : req);
     expect(res.status).toBe(404);
     expect(res.body.error.code).toBe('NOT_FOUND');
@@ -206,6 +289,8 @@ describe('Tenant isolation', () => {
       '/api/v1/inventory/stock',
       '/api/v1/inventory/movements',
       '/api/v1/warehouses',
+      '/api/v1/purchases',
+      `/api/v1/purchases?supplierId=${ids.supplier}`,
     ];
     for (const path of lists) {
       const res = await t.http().get(path).set(auth(a)).expect(200);
@@ -222,6 +307,13 @@ describe('Tenant isolation', () => {
     expect(product.body.name).toBe('B product');
     expect(product.body.quantityOnHand).toBe('10.000');
     expect(product.body.archivedAt).toBeNull();
+    const purchase = await t
+      .http()
+      .get(`/api/v1/purchases/${ids.purchase}`)
+      .set(auth(b))
+      .expect(200);
+    expect(purchase.body).toMatchObject({ status: 'ORDERED', notes: null });
+    expect(purchase.body.items[0].quantityReceived).toBe('0.000');
   });
 
   it('scopes a member to the business of the token, not of the request', async () => {

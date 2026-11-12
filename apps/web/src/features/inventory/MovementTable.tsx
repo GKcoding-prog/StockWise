@@ -25,7 +25,18 @@ export function MovementTypeBadge({ type }: { type: MovementType }) {
 }
 
 function Source({ m }: { m: Movement }) {
-  const ref = m.sale?.reference ?? m.purchase?.reference ?? m.documentRef;
+  // Receipts and supplier returns link back to their purchase.
+  if (m.purchase) {
+    return (
+      <Link
+        to={`/purchases/${m.purchase.id}`}
+        className="font-mono text-xs text-brand-800 hover:underline"
+      >
+        {m.documentRef ?? m.purchase.reference}
+      </Link>
+    );
+  }
+  const ref = m.sale?.reference ?? m.documentRef;
   return ref ? (
     <span className="font-mono text-xs text-stone-600">{ref}</span>
   ) : (
