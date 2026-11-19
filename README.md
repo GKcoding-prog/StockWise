@@ -16,13 +16,13 @@ Requirements: Node 22+, pnpm 10 (`npm i -g pnpm`), Docker.
 ```bash
 pnpm install
 cp apps/api/.env.example apps/api/.env     # then set JWT_ACCESS_SECRET
-pnpm db:up                                  # Postgres on :5433 and Mailpit (http://localhost:8025)
+pnpm db:up                                  # Postgres on :5434 and Mailpit (http://localhost:8025)
 pnpm db:migrate                             # applies init + integrity_guards
 pnpm db:seed                                # roles, permissions and the demo shop (~1 min)
 pnpm dev                                    # API on :3000, web on http://localhost:5173
 ```
 
-Postgres is published on **5433** so it doesn't clash with a locally installed Postgres.
+Postgres is published on **5434** so it doesn't clash with a locally installed Postgres (5432, or 5433 when a second one is installed).
 
 Demo logins (password `Demo2026!`) for *Boutique Ubuntu*, a Bujumbura shop with 75 days of history:
 

@@ -6,7 +6,7 @@ import { join } from 'node:path';
 export default function globalSetup(): void {
   const url =
     process.env.TEST_DATABASE_URL ??
-    'postgresql://stockwise:stockwise@localhost:5433/stockwise_test';
+    'postgresql://stockwise:stockwise@localhost:5434/stockwise_test';
   execSync('pnpm exec prisma migrate deploy', {
     cwd: join(__dirname, '..'),
     env: { ...process.env, DATABASE_URL: url },
