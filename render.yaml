@@ -1,0 +1,42 @@
+# Render Blueprint for the StockWise API (free plan). Setup: docs/08-deploy-free-tier.md
+# The database is on Neon, not Render. Keep the region next to the Neon region.
+services:
+  - type: web
+    name: stockwise-api
+    runtime: node
+    plan: free
+    region: ohio # Neon project is in AWS us-east-2 (Ohio); keep them together
+    branch: main
+    autoDeploy: true
+    # NODE_ENV=production would make pnpm skip devDependencies (Nest CLI, TypeScript, Prisma CLI),
+    # which the build and `prisma migrate deploy` need.
+    buildCommand: >-
+      npm install -g pnpm@10.34.9 &&
+      NODE_ENV=development pnpm install --frozen-lockfile &&
+      pnpm --filter @stockwise/shared build &&
+      pnpm --filter @stockwise/api build
+    # Migrations need a direct connection (DATABASE_URL_UNPOOLED); the app uses the pooled one.
+    startCommand: >-
+      cd apps/api &&
+      DATABASE_URL="$DATABASE_URL_UNPOOLED" ./node_modules/.bin/prisma migrate deploy &&
+      node dist/main.js
+    healthCheckPath: /api/v1/health/live
+    envVars:
+      - key: NODE_VERSION
+        value: '22'
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        sync: false # Neon pooled connection string (host contains -pooler)
+      - key: DATABASE_URL_UNPOOLED
+        sync: false # Neon direct connection string, used only for migrations
+      - key: JWT_ACCESS_SECRET
+        generateValue: true
+      - key: WEB_ORIGINS
+        sync: false # e.g. https://stockwise.netlify.app
+      - key: WEB_URL
+        sync: false # same as WEB_ORIGINS
+      - key: TRUST_PROXY
+        value: '2' # starting guess for Netlify → Render; verify with SHOW_CLIENT_IP (docs/08 §5)
+      - key: SHOW_CLIENT_IP
+        value: 'false'

@@ -1,0 +1,22 @@
+# Netlify serves the React build and proxies /api to the API on Render, so the browser sees
+# one origin and the SameSite=Strict refresh cookie keeps working. Setup: docs/08-deploy-free-tier.md
+
+[build]
+  command = "pnpm --filter @stockwise/shared build && pnpm --filter @stockwise/web build"
+  publish = "apps/web/dist"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+# Change the host if Render gave your service a different URL.
+[[redirects]]
+  from = "/api/*"
+  to = "https://stockwise-api.onrender.com/api/:splat"
+  status = 200
+  force = true
+
+# Single-page app: every other path is handled by the React router.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

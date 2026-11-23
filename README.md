@@ -45,6 +45,10 @@ pnpm typecheck
 
 The API e2e suites include the tenant isolation suite (`test/isolation.e2e-spec.ts`, grow it with every endpoint) and the concurrency test from docs/01 §7.4 (20 parallel stock-outs on 10 units: exactly 10 succeed). CI runs everything on each PR (`.github/workflows/ci.yml`).
 
+## Deploying
+
+For a free demo or first pilot (Neon + Render + Netlify), follow [docs/08-deploy-free-tier.md](docs/08-deploy-free-tier.md). The config is in `render.yaml`, `netlify.toml` and `neon.ts`. Keep the uptime ping on `/api/v1/health/live`, not `/api/v1/health`, so the free database can sleep.
+
 ## Status
 
 **Done** (backlog IDs from docs/07):
