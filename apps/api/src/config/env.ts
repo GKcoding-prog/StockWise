@@ -33,6 +33,17 @@ const EnvSchema = z.object({
     .enum(['true', 'false'])
     .default('true')
     .transform((v) => v === 'true'),
+  /**
+   * How many proxies in front of the API to trust for X-Forwarded-For (Express `trust proxy`).
+   * Nginx on a VPS: 1. Netlify → Render: verify with SHOW_CLIENT_IP (docs/08-deploy-free-tier.md).
+   * Too low and every user shares the proxy's IP for rate limits; too high and clients can spoof it.
+   */
+  TRUST_PROXY: z.coerce.number().int().min(0).max(10).default(1),
+  /** Adds the caller's IP as the API sees it to GET /health/live. Turn on only to check TRUST_PROXY. */
+  SHOW_CLIENT_IP: z
+    .enum(['true', 'false'])
+    .default('false')
+    .transform((v) => v === 'true'),
 });
 
 export type Env = z.infer<typeof EnvSchema>;

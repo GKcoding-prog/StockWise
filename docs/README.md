@@ -12,6 +12,7 @@ Smart Inventory Management and Decision Support System for SMEs in Burundi.
 | 05 | [API specification](05-api-spec.md) | Every REST endpoint with permission, error codes, examples |
 | 06 | [Frontend](06-frontend.md) | Navigation, screens, UI states |
 | 07 | [Backlog](07-backlog.md) | Phases, who builds what, MVP cut line, risks, open questions |
+| 08 | [Free-tier deployment](08-deploy-free-tier.md) | How do we put it online for free? Neon + Render + Netlify, step by step |
 
 **Five ideas to keep in mind while building**
 1. Stock changes only through `InventoryService.applyMovements()`, in a transaction, with row locks. The ledger is the truth.

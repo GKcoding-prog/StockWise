@@ -16,13 +16,13 @@ Requirements: Node 22+, pnpm 10 (`npm i -g pnpm`), Docker.
 ```bash
 pnpm install
 cp apps/api/.env.example apps/api/.env     # then set JWT_ACCESS_SECRET
-pnpm db:up                                  # Postgres on :5433 and Mailpit (http://localhost:8025)
+pnpm db:up                                  # Postgres on :5434 and Mailpit (http://localhost:8025)
 pnpm db:migrate                             # applies init + integrity_guards
 pnpm db:seed                                # roles, permissions and the demo shop (~1 min)
 pnpm dev                                    # API on :3000, web on http://localhost:5173
 ```
 
-Postgres is published on **5433** so it doesn't clash with a locally installed Postgres.
+Postgres is published on **5434** so it doesn't clash with a locally installed Postgres (5432, or 5433 when a second one is installed).
 
 Demo logins (password `Demo2026!`) for *Boutique Ubuntu*, a Bujumbura shop with 75 days of history:
 
@@ -44,6 +44,10 @@ pnpm typecheck
 ```
 
 The API e2e suites include the tenant isolation suite (`test/isolation.e2e-spec.ts`, grow it with every endpoint) and the concurrency test from docs/01 §7.4 (20 parallel stock-outs on 10 units: exactly 10 succeed). CI runs everything on each PR (`.github/workflows/ci.yml`).
+
+## Deploying
+
+For a free demo or first pilot (Neon + Render + Netlify), follow [docs/08-deploy-free-tier.md](docs/08-deploy-free-tier.md). The config is in `render.yaml`, `netlify.toml` and `neon.ts`. Keep the uptime ping on `/api/v1/health/live`, not `/api/v1/health`, so the free database can sleep.
 
 ## Status
 

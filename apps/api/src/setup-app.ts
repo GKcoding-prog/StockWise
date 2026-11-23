@@ -7,7 +7,7 @@ import { env } from './config/env';
 /** HTTP hardening and conventions shared by main.ts and the e2e tests. */
 export function setupApp(app: INestApplication): void {
   const express = app as NestExpressApplication;
-  express.set('trust proxy', 1); // behind Nginx in production
+  express.set('trust proxy', env().TRUST_PROXY); // proxies in front of the API (Nginx, Netlify/Render)
   express.useBodyParser('json', { limit: '1mb' });
   app.setGlobalPrefix('api/v1');
   app.use(helmet());

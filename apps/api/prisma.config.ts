@@ -10,6 +10,7 @@ export default defineConfig({
   datasource: {
     // `prisma generate` runs on `pnpm install`, before apps/api/.env exists in a fresh clone.
     // It doesn't connect, so fall back to the docker-compose URL instead of failing the install.
-    url: process.env.DATABASE_URL ?? 'postgresql://stockwise:stockwise@localhost:5433/stockwise',
+    url:
+      process.env.DATABASE_URL ?? 'postgresql://stockwise:stockwise@localhost:5434/stockwise',
   },
 });
