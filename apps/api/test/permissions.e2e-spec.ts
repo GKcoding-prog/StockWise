@@ -16,6 +16,7 @@ describe('Role permissions', () => {
   let manager: Actor;
   let employee: Actor;
   let productId: string;
+  let supplierId: string;
 
   beforeAll(async () => {
     t = await createTestApp();
@@ -30,6 +31,9 @@ describe('Role permissions', () => {
         costPrice: '700',
       })
     ).id;
+    supplierId = (
+      await t.http().post('/api/v1/suppliers').set(auth(owner)).send({ name: 'Perm supplier' })
+    ).body.id;
   });
   afterAll(() => t.close());
 
@@ -123,6 +127,20 @@ describe('Role permissions', () => {
       '/api/v1/business/plan',
       null,
       { owner: 200, manager: 403, employee: 403 },
+    ],
+    [
+      'list purchases',
+      'get',
+      '/api/v1/purchases',
+      null,
+      { owner: 200, manager: 200, employee: 200 },
+    ],
+    [
+      'create purchase',
+      'post',
+      '/api/v1/purchases',
+      () => ({ supplierId, items: [{ productId, quantityOrdered: '1', unitCost: '700' }] }),
+      { owner: 201, manager: 201, employee: 403 },
     ],
   ];
 

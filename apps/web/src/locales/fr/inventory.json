@@ -39,7 +39,8 @@
     "DAMAGED": "Endommagé",
     "EXPIRED": "Périmé",
     "LOST": "Perdu",
-    "OTHER": "Autre"
+    "OTHER": "Autre",
+    "WRONG_ITEM": "Mauvais article"
   },
   "types": {
     "OPENING_BALANCE": "Stock initial",

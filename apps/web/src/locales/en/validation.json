@@ -9,5 +9,10 @@
   "timezone": "Unknown time zone",
   "roleOrStatus": "Choose a role or a status",
   "openingCostRequired": "Enter the unit cost of the opening stock",
-  "oneQuantity": "Enter either a new quantity or a difference"
+  "oneQuantity": "Enter either a new quantity or a difference",
+  "duplicateProduct": "This product is already in the list",
+  "duplicateLine": "The same line appears twice",
+  "nothingToReceive": "Enter at least one quantity",
+  "idempotencyKey": "Invalid request key. Please try again.",
+  "wholeNumber": "Whole numbers only for this product"
 }
