@@ -114,3 +114,42 @@ export interface Supplier {
   productCount?: number;
   openPurchases?: { count: number; value?: string };
 }
+
+export type PurchaseStatus = 'DRAFT' | 'ORDERED' | 'PARTIALLY_RECEIVED' | 'RECEIVED' | 'CANCELLED';
+
+/** GET /purchases row. `total` only with products.view_cost. */
+export interface PurchaseSummary {
+  id: string;
+  reference: string;
+  status: PurchaseStatus;
+  supplier: Ref;
+  itemCount: number;
+  orderedAt: string | null;
+  expectedAt: string | null;
+  receivedAt: string | null;
+  cancelledAt: string | null;
+  cancelReason: string | null;
+  notes: string | null;
+  createdAt: string;
+  updatedAt: string;
+  total?: string;
+}
+
+export interface PurchaseItem {
+  id: string;
+  productId: string;
+  product: { id: string; name: string; sku: string; unit: string; allowFractional: boolean };
+  quantityOrdered: string;
+  quantityReceived: string;
+  quantityReturned: string;
+  quantityRemaining: string;
+  // Only with products.view_cost
+  unitCost?: string;
+  lineTotal?: string;
+}
+
+export interface PurchaseDetail extends Omit<PurchaseSummary, 'supplier' | 'itemCount'> {
+  supplier: Ref & { phone: string | null; leadTimeDays: number };
+  createdBy: { id: string; fullName: string };
+  items: PurchaseItem[];
+}

@@ -9,5 +9,10 @@
   "timezone": "Fuseau horaire inconnu",
   "roleOrStatus": "Choisissez un rôle ou un statut",
   "openingCostRequired": "Indiquez le coût unitaire du stock initial",
-  "oneQuantity": "Indiquez une nouvelle quantité ou une différence"
+  "oneQuantity": "Indiquez une nouvelle quantité ou une différence",
+  "duplicateProduct": "Ce produit est déjà dans la liste",
+  "duplicateLine": "La même ligne apparaît deux fois",
+  "nothingToReceive": "Saisissez au moins une quantité",
+  "idempotencyKey": "Clé de requête invalide. Réessayez.",
+  "wholeNumber": "Nombre entier uniquement pour ce produit"
 }

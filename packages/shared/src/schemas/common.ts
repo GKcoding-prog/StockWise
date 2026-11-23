@@ -64,6 +64,12 @@ export interface Paginated<T> {
 /** Business-local calendar date, e.g. 2026-11-01. */
 export const localDate = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, { message: 'sw.dateFormat' });
 
+/** Optional local date; an empty form field ("") means "not set". */
+export const nullableLocalDate = z
+  .union([localDate, z.literal('')])
+  .nullish()
+  .transform((v) => (v ? v : null));
+
 /**
  * Custom validation messages are translation keys ("sw.notNegative"), so the API's
  * VALIDATION_ERROR details and client-side form errors can both be shown in FR or EN.

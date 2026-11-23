@@ -53,6 +53,9 @@ export type StockStatus = (typeof STOCK_STATUSES)[number];
 export const WRITE_OFF_REASONS = ['DAMAGED', 'EXPIRED', 'LOST', 'OTHER'] as const;
 export type WriteOffReason = (typeof WRITE_OFF_REASONS)[number];
 
+export const SUPPLIER_RETURN_REASONS = ['DAMAGED', 'WRONG_ITEM', 'EXPIRED', 'OTHER'] as const;
+export type SupplierReturnReason = (typeof SUPPLIER_RETURN_REASONS)[number];
+
 export const ADJUSTMENT_REASONS = [
   'COUNT_CORRECTION',
   'FOUND',

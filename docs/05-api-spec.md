@@ -155,16 +155,17 @@ Each endpoint below lists the permission key from 03-roles §2. `auth` = any aut
 
 | Method | Path | Perm | Notes |
 |---|---|---|---|
-| GET | `/purchases` | purchases.view | `status`, `supplierId`, `from`, `to`, `q` (reference) |
-| GET | `/purchases/:id` | purchases.view | With items, received quantities, movements |
-| POST | `/purchases` | purchases.manage | `{supplierId, expectedAt?, notes?, items:[{productId, quantityOrdered, unitCost}]}` → DRAFT |
-| PATCH | `/purchases/:id` | purchases.manage | Only DRAFT/ORDERED with nothing received |
-| POST | `/purchases/:id/order` | purchases.manage | DRAFT → ORDERED; sets `orderedAt`, default `expectedAt` |
-| POST | `/purchases/:id/receive` | purchases.receive | **Idempotency-Key.** `{lines:[{purchaseItemId, quantity, unitCost?}], receivedAt?}`; `unitCost` change requires `purchases.manage` |
-| POST | `/purchases/:id/cancel` | purchases.manage | `{reason}`; partial → closes remainder |
-| POST | `/purchases/:id/supplier-returns` | purchases.return | `{reason, lines:[{purchaseItemId, quantity}]}` |
-| POST | `/purchases/from-recommendations` | purchases.manage | `{lines:[{productId, quantity}]}` → one DRAFT per supplier |
-| GET | `/purchases/:id/pdf` | purchases.view | Printable purchase order |
+| GET | `/purchases` | purchases.view | `status`, `supplierId`, `from`, `to`, `q` (reference or supplier). `total` only with `products.view_cost` |
+| GET | `/purchases/:id` | purchases.view | Items with ordered / received / returned / remaining; costs only with `products.view_cost` |
+| GET | `/purchases/:id/movements` | inventory.view_movements | Receipts and supplier returns caused by this purchase |
+| POST | `/purchases` | purchases.manage | `{supplierId, expectedAt?, notes?, items:[{productId, quantityOrdered, unitCost}], markOrdered?}` → DRAFT, or ORDERED when `markOrdered: true`. One line per product. Empty `expectedAt` = not set |
+| PATCH | `/purchases/:id` | purchases.manage | Only DRAFT/ORDERED with nothing received. Fields left out are unchanged; `items` replaces all lines |
+| POST | `/purchases/:id/order` | purchases.manage | DRAFT → ORDERED; sets `orderedAt`, default `expectedAt` = today + supplier lead time |
+| POST | `/purchases/:id/receive` | purchases.receive | **Idempotency-Key required.** `{lines:[{purchaseItemId, quantity, unitCost?}], note?}`; zero lines ignored; `unitCost` change requires `purchases.manage` and updates the product's last cost. Same key + same body → same result; same key + other body → `IDEMPOTENCY_CONFLICT` |
+| POST | `/purchases/:id/cancel` | purchases.manage | `{reason}`; partial → closes remainder, received stock stays |
+| POST | `/purchases/:id/supplier-returns` | purchases.return | `{reason: DAMAGED|WRONG_ITEM|EXPIRED|OTHER, note?, lines:[{purchaseItemId, quantity}]}`; ≤ received − returned (`OVER_RETURN`); optional Idempotency-Key |
+| POST | `/purchases/from-recommendations` | purchases.manage | *Phase 5.* `{lines:[{productId, quantity}]}` → one DRAFT per supplier |
+| GET | `/purchases/:id/pdf` | purchases.view | *Phase 4.* Printable purchase order |
 
 **Status machine:** `DRAFT → ORDERED → PARTIALLY_RECEIVED → RECEIVED`; `DRAFT|ORDERED|PARTIALLY_RECEIVED → CANCELLED`. Anything else → `INVALID_STATE_TRANSITION`.
 

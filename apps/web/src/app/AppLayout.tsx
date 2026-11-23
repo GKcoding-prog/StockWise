@@ -2,6 +2,7 @@ import type { PermissionKey } from '@stockwise/shared';
 import {
   Boxes,
   ChevronDown,
+  ClipboardList,
   History,
   LayoutDashboard,
   LogOut,
@@ -31,8 +32,18 @@ function useNavItems(): NavItem[] {
   const { t } = useTranslation();
   const can = useCan();
   const items: NavItem[] = [
-    { to: '/', label: t('common:nav.dashboard'), icon: LayoutDashboard, end: true },
-    { to: '/products', label: t('common:nav.products'), icon: Package, perm: 'products.view' },
+    {
+      to: '/',
+      label: t('common:nav.dashboard'),
+      icon: LayoutDashboard,
+      end: true,
+    },
+    {
+      to: '/products',
+      label: t('common:nav.products'),
+      icon: Package,
+      perm: 'products.view',
+    },
     {
       to: '/inventory',
       label: t('common:nav.inventory'),
@@ -46,7 +57,18 @@ function useNavItems(): NavItem[] {
       icon: History,
       perm: 'inventory.view_movements',
     },
-    { to: '/suppliers', label: t('common:nav.suppliers'), icon: Truck, perm: 'suppliers.view' },
+    {
+      to: '/purchases',
+      label: t('common:nav.purchases'),
+      icon: ClipboardList,
+      perm: 'purchases.view',
+    },
+    {
+      to: '/suppliers',
+      label: t('common:nav.suppliers'),
+      icon: Truck,
+      perm: 'suppliers.view',
+    },
     { to: '/settings', label: t('common:nav.settings'), icon: Settings },
   ];
   return items.filter((i) => !i.perm || can(i.perm));

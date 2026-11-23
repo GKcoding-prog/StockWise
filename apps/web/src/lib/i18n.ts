@@ -9,6 +9,7 @@ import enDashboard from '@/locales/en/dashboard.json';
 import enErrors from '@/locales/en/errors.json';
 import enInventory from '@/locales/en/inventory.json';
 import enProducts from '@/locales/en/products.json';
+import enPurchases from '@/locales/en/purchases.json';
 import enSettings from '@/locales/en/settings.json';
 import enSuppliers from '@/locales/en/suppliers.json';
 import enValidation from '@/locales/en/validation.json';
@@ -18,6 +19,7 @@ import frDashboard from '@/locales/fr/dashboard.json';
 import frErrors from '@/locales/fr/errors.json';
 import frInventory from '@/locales/fr/inventory.json';
 import frProducts from '@/locales/fr/products.json';
+import frPurchases from '@/locales/fr/purchases.json';
 import frSettings from '@/locales/fr/settings.json';
 import frSuppliers from '@/locales/fr/suppliers.json';
 import frValidation from '@/locales/fr/validation.json';
@@ -30,6 +32,7 @@ export const resources = {
     auth: frAuth,
     dashboard: frDashboard,
     products: frProducts,
+    purchases: frPurchases,
     inventory: frInventory,
     suppliers: frSuppliers,
     settings: frSettings,
@@ -41,6 +44,7 @@ export const resources = {
     auth: enAuth,
     dashboard: enDashboard,
     products: enProducts,
+    purchases: enPurchases,
     inventory: enInventory,
     suppliers: enSuppliers,
     settings: enSettings,
