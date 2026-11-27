@@ -1,4 +1,9 @@
-# Local development: only the services the apps need. The API and web run natively (docs/01 §15).
+# Local Docker services. Two ways to use this file:
+#
+#   pnpm db:up    Postgres + Mailpit only; you run the API and web with `pnpm dev` (docs/01 §15).
+#   pnpm app:up   The whole app in containers (profile "app"): http://localhost:8080
+#
+# Both use the same local database. Nothing here touches Neon, Render or Netlify.
 services:
   postgres:
     image: postgres:16-alpine
@@ -22,6 +27,58 @@ services:
     ports:
       - '1025:1025' # SMTP
       - '8025:8025' # Web UI: http://localhost:8025
+
+  # ── Whole app in containers (only with `--profile app`) ──────────────────────────────────
+
+  api:
+    profiles: [app]
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    environment:
+      # Development mode on purpose: plain-http cookies (so a phone on your Wi-Fi works too),
+      # full error messages, and the tenant guard rail on — same as `pnpm dev`.
+      NODE_ENV: development
+      PORT: 3000
+      DATABASE_URL: postgresql://stockwise:stockwise@postgres:5432/stockwise
+      # Local-only secret. Production secrets live in Render, never in this file.
+      JWT_ACCESS_SECRET: local-docker-only-secret-change-me-0123456789
+      # Addresses the app is opened from. To test from a phone on your Wi-Fi, add your computer's
+      # address in a .env file next to this one, e.g.
+      #   WEB_ORIGINS=http://localhost:8080,http://192.168.1.20:8080
+      WEB_ORIGINS: ${WEB_ORIGINS:-http://localhost:8080}
+      WEB_URL: ${WEB_URL:-http://localhost:8080}
+      SMTP_HOST: mailpit
+      SMTP_PORT: 1025
+      TRUST_PROXY: 1 # nginx in the web container
+      # Demo shop on first start (skipped once it exists). "false": only roles and permissions.
+      SEED_DEMO: ${SEED_DEMO:-true}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      mailpit:
+        condition: service_started
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - "fetch('http://localhost:3000/api/v1/health/live').then(r => process.exit(r.ok ? 0 : 1), () => process.exit(1))"
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 120s # migrations + demo seed on the first start
+
+  web:
+    profiles: [app]
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+    ports:
+      - '8080:80' # http://localhost:8080
+    depends_on:
+      api:
+        condition: service_healthy
 
 volumes:
   pgdata:

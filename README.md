@@ -34,6 +34,29 @@ Demo logins (password `Demo2026!`) for *Boutique Ubuntu*, a Bujumbura shop with 
 
 `SEED_DEMO=false pnpm db:seed` seeds only roles and permissions (use this in production).
 
+## Run the whole app in Docker
+
+No Node or pnpm needed on your machine, and nothing touches the online Neon / Render / Netlify setup. Docker builds the API and web images and runs them with the local Postgres:
+
+```bash
+pnpm app:up       # or: docker compose --profile app up -d --build
+```
+
+Open **http://localhost:8080**. The first start takes a few minutes (image build, then migrations and the demo shop). After that it starts in seconds.
+
+| Command | What it does |
+|---|---|
+| `pnpm app:up` | Build (if the code changed) and start Postgres, Mailpit, the API and the web app |
+| `pnpm app:logs` | Follow the API and web logs |
+| `pnpm app:down` | Stop everything (the data stays in the `pgdata` volume) |
+| `docker compose --profile app down -v` | Stop and **delete** the local database, to start fresh |
+
+- Same database as `pnpm dev`: both use the Postgres container on port 5434, so data you create in one mode shows up in the other.
+- After pulling new code, run `pnpm app:up` again: it rebuilds and applies new migrations on start.
+- **From a phone on your Wi-Fi:** create a `.env` file next to `docker-compose.yml` with your computer's address, for example `WEB_ORIGINS=http://localhost:8080,http://192.168.1.20:8080`, run `pnpm app:up`, then open `http://192.168.1.20:8080` on the phone. Without it, login works but a page reload signs you out.
+- `SEED_DEMO=false` in that same `.env` starts with an empty shop (roles and permissions only).
+- Emails (password reset, invitations) land in Mailpit: http://localhost:8025.
+
 ## Tests
 
 ```bash

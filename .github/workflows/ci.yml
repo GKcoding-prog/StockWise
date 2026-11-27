@@ -52,3 +52,30 @@ jobs:
       - name: Dependency audit
         run: pnpm audit --prod --audit-level high
         continue-on-error: true
+
+  # The local Docker stack (`pnpm app:up`): build both images, start everything with the demo
+  # seed, and check the app and the API through nginx, as a browser would on localhost:8080.
+  docker:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build images
+        run: docker compose --profile app build
+
+      - name: Start the stack (waits for the API healthcheck)
+        run: docker compose --profile app up -d --wait --wait-timeout 300
+
+      - name: Check web and API through nginx
+        run: |
+          curl -fsS http://localhost:8080/ | grep -q '<div id="root">'
+          curl -fsS http://localhost:8080/purchases | grep -q '<div id="root">'
+          curl -fsS http://localhost:8080/api/v1/health/live
+          curl -fsS -X POST http://localhost:8080/api/v1/auth/login \
+            -H 'Content-Type: application/json' -H 'Origin: http://localhost:8080' \
+            -d '{"email":"owner@demo.stockwise.bi","password":"Demo2026!"}' | grep -q accessToken
+
+      - name: Logs on failure
+        if: failure()
+        run: docker compose --profile app logs --no-color

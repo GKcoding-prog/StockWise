@@ -1,0 +1,19 @@
+# Keep the Docker build context small and free of secrets.
+**/node_modules
+**/dist
+**/coverage
+**/*.tsbuildinfo
+apps/api/src/generated
+apps/api/uploads
+
+# Never bake local secrets (e.g. the Neon connection string) into an image.
+**/.env
+**/.env.*
+!**/.env.example
+
+.git
+.github
+docs
+**/test-results
+**/playwright-report
+**/.DS_Store
