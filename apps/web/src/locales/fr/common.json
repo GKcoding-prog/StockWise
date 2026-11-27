@@ -30,6 +30,8 @@
   "nav": {
     "main": "Navigation principale",
     "dashboard": "Tableau de bord",
+    "newSale": "Nouvelle vente",
+    "sales": "Ventes",
     "products": "Produits",
     "inventory": "Stock",
     "movements": "Mouvements",

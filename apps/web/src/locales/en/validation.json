@@ -14,5 +14,7 @@
   "duplicateLine": "The same line appears twice",
   "nothingToReceive": "Enter at least one quantity",
   "idempotencyKey": "Invalid request key. Please try again.",
-  "wholeNumber": "Whole numbers only for this product"
+  "wholeNumber": "Whole numbers only for this product",
+  "discountAboveLine": "The discount is larger than the line amount",
+  "tenderedTooLow": "Less than the total to pay"
 }

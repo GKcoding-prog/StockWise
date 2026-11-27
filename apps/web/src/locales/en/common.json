@@ -30,6 +30,8 @@
   "nav": {
     "main": "Main navigation",
     "dashboard": "Dashboard",
+    "newSale": "New sale",
+    "sales": "Sales",
     "products": "Products",
     "inventory": "Stock",
     "movements": "Movements",

@@ -1,0 +1,121 @@
+{
+  "title": "Ventes",
+  "subtitle": "Toutes les ventes enregistrées, les plus récentes d’abord.",
+  "subtitleOwn": "Les ventes que vous avez enregistrées, les plus récentes d’abord.",
+  "new": "Nouvelle vente",
+  "searchPlaceholder": "Rechercher par référence, nom ou téléphone du client",
+  "allPaymentMethods": "Tous les moyens de paiement",
+  "filters": {
+    "from": "Du",
+    "to": "Au"
+  },
+  "status": {
+    "ALL": "Toutes",
+    "COMPLETED": "Terminée",
+    "PARTIALLY_RETURNED": "Retour partiel",
+    "RETURNED": "Retournée",
+    "VOIDED": "Annulée"
+  },
+  "paymentMethods": {
+    "CASH": "Espèces",
+    "MOBILE_MONEY": "Mobile money",
+    "BANK_TRANSFER": "Virement",
+    "CARD": "Carte",
+    "OTHER": "Autre"
+  },
+  "empty": {
+    "title": "Aucune vente pour l’instant",
+    "text": "Enregistrez votre première vente : le stock baisse dès qu’elle est terminée.",
+    "filteredTitle": "Aucune vente ne correspond"
+  },
+  "itemCount_one": "{{count}} article",
+  "itemCount_other": "{{count}} articles",
+  "fields": {
+    "status": "Statut",
+    "product": "Produit",
+    "quantity": "Quantité",
+    "unitPrice": "Prix",
+    "discount": "Remise",
+    "lineTotal": "Total",
+    "lineCost": "Coût",
+    "subtotal": "Sous-total",
+    "total": "Total",
+    "paymentMethod": "Paiement",
+    "amountTendered": "Montant reçu",
+    "changeDue": "Monnaie",
+    "customerName": "Nom du client",
+    "customerPhone": "Téléphone du client",
+    "returned": "retourné(s)",
+    "returnedTotal": "Remboursé",
+    "netTotal": "Total net"
+  },
+  "pos": {
+    "title": "Nouvelle vente",
+    "shortcuts": "Clavier : / rechercher · F2 terminer la vente · Échap vider la recherche",
+    "search": "Scanner ou rechercher un produit (nom, SKU, code-barres)",
+    "results": "Produits correspondants",
+    "noProductFound": "Aucun produit trouvé pour « {{code}} »",
+    "cartEmptyTitle": "Le panier est vide",
+    "cartEmptyText": "Scannez un code-barres ou recherchez un produit pour l’ajouter.",
+    "clear": "Vider le panier",
+    "remove": "Retirer {{name}}",
+    "decrease": "Un {{name}} de moins",
+    "increase": "Un {{name}} de plus",
+    "discountPlaceholder": "Remise",
+    "onlyAvailable": "Seulement {{quantity}} disponible(s)",
+    "invalidQuantity": "Saisissez une quantité supérieure à 0 (3 décimales au plus)",
+    "discountLimit": "Au-delà de votre limite de remise de {{max}} %",
+    "tenderedHint": "Laissez vide si le client paie le montant exact.",
+    "addCustomer": "+ Ajouter les coordonnées du client",
+    "complete": "Terminer la vente",
+    "fixLines": "Corrigez d’abord les lignes signalées."
+  },
+  "done": {
+    "title": "Vente enregistrée",
+    "change": "Monnaie à rendre :",
+    "stockWarning": "Stock bas après cette vente :",
+    "view": "Voir la vente"
+  },
+  "actions": {
+    "print80": "Imprimer le reçu",
+    "printA4": "Imprimer en A4",
+    "void": "Annuler la vente",
+    "return": "Retour client"
+  },
+  "detail": {
+    "lines": "Articles vendus",
+    "movements": "Mouvements de stock",
+    "noMovements": "Aucun mouvement de stock.",
+    "voided": "Annulée par {{name}} le {{date}}"
+  },
+  "void": {
+    "title": "Annuler {{reference}} ?",
+    "text": "Tous les articles reviennent en stock et la vente ne compte plus dans vos recettes. Cette action est définitive.",
+    "reason": "Motif",
+    "submit": "Annuler la vente",
+    "keep": "La garder"
+  },
+  "return": {
+    "title": "Retour client",
+    "intro": "Les articles retournés reviennent en stock. Remboursez au client le montant indiqué ci-dessous.",
+    "returnable": "Retournable",
+    "quantity": "À retourner",
+    "reason": "Motif",
+    "note": "Note",
+    "refund": "À rembourser au client",
+    "nothing": "Saisissez au moins une quantité.",
+    "submit": "Confirmer le retour",
+    "reasons": {
+      "DEFECTIVE": "Défectueux",
+      "WRONG_ITEM": "Mauvais article",
+      "CHANGED_MIND": "Changement d’avis",
+      "OTHER": "Autre"
+    }
+  },
+  "receipt": {
+    "reference": "Reçu",
+    "cashier": "Caissier :",
+    "customer": "Client :",
+    "thanks": "Merci pour votre achat !"
+  }
+}

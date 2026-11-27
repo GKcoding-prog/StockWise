@@ -1,0 +1,121 @@
+{
+  "title": "Sales",
+  "subtitle": "Every sale recorded, newest first.",
+  "subtitleOwn": "The sales you recorded, newest first.",
+  "new": "New sale",
+  "searchPlaceholder": "Search by reference, customer name or phone",
+  "allPaymentMethods": "All payment methods",
+  "filters": {
+    "from": "From",
+    "to": "To"
+  },
+  "status": {
+    "ALL": "All",
+    "COMPLETED": "Completed",
+    "PARTIALLY_RETURNED": "Partly returned",
+    "RETURNED": "Returned",
+    "VOIDED": "Voided"
+  },
+  "paymentMethods": {
+    "CASH": "Cash",
+    "MOBILE_MONEY": "Mobile money",
+    "BANK_TRANSFER": "Bank transfer",
+    "CARD": "Card",
+    "OTHER": "Other"
+  },
+  "empty": {
+    "title": "No sales yet",
+    "text": "Record your first sale: stock goes down as soon as it’s completed.",
+    "filteredTitle": "No sales match"
+  },
+  "itemCount_one": "{{count}} item",
+  "itemCount_other": "{{count}} items",
+  "fields": {
+    "status": "Status",
+    "product": "Product",
+    "quantity": "Quantity",
+    "unitPrice": "Price",
+    "discount": "Discount",
+    "lineTotal": "Total",
+    "lineCost": "Cost",
+    "subtotal": "Subtotal",
+    "total": "Total",
+    "paymentMethod": "Payment",
+    "amountTendered": "Amount received",
+    "changeDue": "Change",
+    "customerName": "Customer name",
+    "customerPhone": "Customer phone",
+    "returned": "returned",
+    "returnedTotal": "Refunded",
+    "netTotal": "Net total"
+  },
+  "pos": {
+    "title": "New sale",
+    "shortcuts": "Keyboard: / search · F2 complete the sale · Esc clear the search",
+    "search": "Scan or search a product (name, SKU, barcode)",
+    "results": "Matching products",
+    "noProductFound": "No product found for “{{code}}”",
+    "cartEmptyTitle": "The cart is empty",
+    "cartEmptyText": "Scan a barcode or search a product to add it.",
+    "clear": "Clear cart",
+    "remove": "Remove {{name}}",
+    "decrease": "One less {{name}}",
+    "increase": "One more {{name}}",
+    "discountPlaceholder": "Discount",
+    "onlyAvailable": "Only {{quantity}} available",
+    "invalidQuantity": "Enter a quantity greater than 0 (at most 3 decimals)",
+    "discountLimit": "Above your {{max}} % discount limit",
+    "tenderedHint": "Leave empty if the customer pays the exact amount.",
+    "addCustomer": "+ Add customer details",
+    "complete": "Complete sale",
+    "fixLines": "Fix the highlighted lines first."
+  },
+  "done": {
+    "title": "Sale recorded",
+    "change": "Change to give:",
+    "stockWarning": "Running low after this sale:",
+    "view": "View sale"
+  },
+  "actions": {
+    "print80": "Print receipt",
+    "printA4": "Print A4",
+    "void": "Void sale",
+    "return": "Customer return"
+  },
+  "detail": {
+    "lines": "Items sold",
+    "movements": "Stock movements",
+    "noMovements": "No stock movements.",
+    "voided": "Voided by {{name}} on {{date}}"
+  },
+  "void": {
+    "title": "Void {{reference}}?",
+    "text": "All items go back into stock and the sale no longer counts in your takings. This can’t be undone.",
+    "reason": "Reason",
+    "submit": "Void sale",
+    "keep": "Keep it"
+  },
+  "return": {
+    "title": "Customer return",
+    "intro": "Returned items go back into stock. Give the customer the refund shown below.",
+    "returnable": "Returnable",
+    "quantity": "To return",
+    "reason": "Reason",
+    "note": "Note",
+    "refund": "Refund to the customer",
+    "nothing": "Enter at least one quantity.",
+    "submit": "Confirm return",
+    "reasons": {
+      "DEFECTIVE": "Defective",
+      "WRONG_ITEM": "Wrong item",
+      "CHANGED_MIND": "Changed mind",
+      "OTHER": "Other"
+    }
+  },
+  "receipt": {
+    "reference": "Receipt",
+    "cashier": "Cashier:",
+    "customer": "Customer:",
+    "thanks": "Thank you for your purchase!"
+  }
+}

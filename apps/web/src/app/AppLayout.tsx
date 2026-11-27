@@ -8,7 +8,9 @@ import {
   LogOut,
   Menu,
   Package,
+  Receipt,
   Settings,
+  ShoppingCart,
   Truck,
   X,
   type LucideIcon,
@@ -36,6 +38,19 @@ function useNavItems(): NavItem[] {
       to: '/',
       label: t('common:nav.dashboard'),
       icon: LayoutDashboard,
+      end: true,
+    },
+    {
+      to: '/sales/new',
+      label: t('common:nav.newSale'),
+      icon: ShoppingCart,
+      perm: 'sales.create',
+    },
+    {
+      to: '/sales',
+      label: t('common:nav.sales'),
+      icon: Receipt,
+      perm: 'sales.create',
       end: true,
     },
     {
@@ -162,7 +177,7 @@ export function AppLayout() {
   const { t } = useTranslation();
   const [menuOpen, setMenuOpen] = useState(false);
   const items = useNavItems();
-  const bottom = items.filter((i) => ['/', '/products', '/inventory'].includes(i.to));
+  const bottom = items.filter((i) => ['/', '/sales/new', '/products', '/inventory'].includes(i.to));
 
   return (
     <div className="min-h-dvh md:grid md:grid-cols-[15rem_1fr]">
@@ -204,9 +219,9 @@ export function AppLayout() {
         </main>
       </div>
 
-      {/* Mobile bottom bar: Dashboard · Products · Stock · More (docs/06 §2) */}
+      {/* Mobile bottom bar: Dashboard · New sale · Products · Stock · More (docs/06 §2) */}
       <nav
-        className="fixed inset-x-0 bottom-0 z-20 grid grid-cols-4 border-t border-stone-200 bg-white md:hidden"
+        className="fixed inset-x-0 bottom-0 z-20 grid auto-cols-fr grid-flow-col border-t border-stone-200 bg-white md:hidden"
         aria-label={t('common:nav.main')}
       >
         {bottom.map(({ to, label, icon: Icon, end }) => (

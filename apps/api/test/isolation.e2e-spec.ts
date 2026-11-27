@@ -59,7 +59,16 @@ describe('Tenant isolation', () => {
         items: [{ productId: product.id, quantityOrdered: '5', unitCost: '100' }],
       })
       .expect(201);
+    const sale = await t
+      .http()
+      .post('/api/v1/sales')
+      .set(auth(b))
+      .set('Idempotency-Key', 'isolation-b-sale-1')
+      .send({ paymentMethod: 'CASH', items: [{ productId: product.id, quantity: '1' }] })
+      .expect(201);
     Object.assign(ids, {
+      sale: sale.body.id,
+      saleItem: sale.body.items[0].id,
       category: category.body.id,
       supplier: supplier.body.id,
       product: product.id,
@@ -268,6 +277,30 @@ describe('Tenant isolation', () => {
   ];
   notFound.push(...purchaseRows);
 
+  const saleRows: Row[] = [
+    ['GET /sales/{sale}', 'get', () => `/api/v1/sales/${ids.sale}`, null],
+    ['GET /sales/{sale}/movements', 'get', () => `/api/v1/sales/${ids.sale}/movements`, null],
+    [
+      'POST /sales/{sale}/void',
+      'post',
+      () => `/api/v1/sales/${ids.sale}/void`,
+      () => ({ reason: 'hijack' }),
+    ],
+    [
+      'POST /sales/{sale}/returns',
+      'post',
+      () => `/api/v1/sales/${ids.sale}/returns`,
+      () => ({ reason: 'OTHER', lines: [{ saleItemId: ids.saleItem, quantity: '1' }] }),
+    ],
+    [
+      'POST /sales with their product',
+      'post',
+      () => '/api/v1/sales',
+      () => ({ paymentMethod: 'CASH', items: [{ productId: ids.product, quantity: '1' }] }),
+    ],
+  ];
+  notFound.push(...saleRows);
+
   it.each(notFound)('%s → 404 for another business', async (_label, method, path, body) => {
     // Idempotency-Key is required by some writes; send one everywhere so they reach the lookup.
     const req = t
@@ -291,6 +324,8 @@ describe('Tenant isolation', () => {
       '/api/v1/warehouses',
       '/api/v1/purchases',
       `/api/v1/purchases?supplierId=${ids.supplier}`,
+      '/api/v1/sales',
+      `/api/v1/sales?productId=${ids.product}`,
     ];
     for (const path of lists) {
       const res = await t.http().get(path).set(auth(a)).expect(200);
@@ -305,7 +340,9 @@ describe('Tenant isolation', () => {
   it('left business B untouched', async () => {
     const product = await t.http().get(`/api/v1/products/${ids.product}`).set(auth(b)).expect(200);
     expect(product.body.name).toBe('B product');
-    expect(product.body.quantityOnHand).toBe('10.000');
+    expect(product.body.quantityOnHand).toBe('9.000'); // 10 opening − 1 sold
+    const sale = await t.http().get(`/api/v1/sales/${ids.sale}`).set(auth(b)).expect(200);
+    expect(sale.body).toMatchObject({ status: 'COMPLETED', returnedTotal: '0.00' });
     expect(product.body.archivedAt).toBeNull();
     const purchase = await t
       .http()

@@ -10,6 +10,7 @@ import enErrors from '@/locales/en/errors.json';
 import enInventory from '@/locales/en/inventory.json';
 import enProducts from '@/locales/en/products.json';
 import enPurchases from '@/locales/en/purchases.json';
+import enSales from '@/locales/en/sales.json';
 import enSettings from '@/locales/en/settings.json';
 import enSuppliers from '@/locales/en/suppliers.json';
 import enValidation from '@/locales/en/validation.json';
@@ -20,6 +21,7 @@ import frErrors from '@/locales/fr/errors.json';
 import frInventory from '@/locales/fr/inventory.json';
 import frProducts from '@/locales/fr/products.json';
 import frPurchases from '@/locales/fr/purchases.json';
+import frSales from '@/locales/fr/sales.json';
 import frSettings from '@/locales/fr/settings.json';
 import frSuppliers from '@/locales/fr/suppliers.json';
 import frValidation from '@/locales/fr/validation.json';
@@ -33,6 +35,7 @@ export const resources = {
     dashboard: frDashboard,
     products: frProducts,
     purchases: frPurchases,
+    sales: frSales,
     inventory: frInventory,
     suppliers: frSuppliers,
     settings: frSettings,
@@ -45,6 +48,7 @@ export const resources = {
     dashboard: enDashboard,
     products: enProducts,
     purchases: enPurchases,
+    sales: enSales,
     inventory: enInventory,
     suppliers: enSuppliers,
     settings: enSettings,

@@ -40,7 +40,10 @@
     "EXPIRED": "Périmé",
     "LOST": "Perdu",
     "OTHER": "Autre",
-    "WRONG_ITEM": "Mauvais article"
+    "WRONG_ITEM": "Mauvais article",
+    "VOIDED": "Vente annulée",
+    "DEFECTIVE": "Défectueux",
+    "CHANGED_MIND": "Changement d’avis"
   },
   "types": {
     "OPENING_BALANCE": "Stock initial",

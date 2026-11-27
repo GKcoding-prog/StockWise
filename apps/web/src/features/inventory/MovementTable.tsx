@@ -36,7 +36,15 @@ function Source({ m }: { m: Movement }) {
       </Link>
     );
   }
-  const ref = m.sale?.reference ?? m.documentRef;
+  // Sales, voids and customer returns link back to their sale.
+  if (m.sale) {
+    return (
+      <Link to={`/sales/${m.sale.id}`} className="font-mono text-xs text-brand-800 hover:underline">
+        {m.documentRef ?? m.sale.reference}
+      </Link>
+    );
+  }
+  const ref = m.documentRef;
   return ref ? (
     <span className="font-mono text-xs text-stone-600">{ref}</span>
   ) : (

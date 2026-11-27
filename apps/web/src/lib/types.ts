@@ -1,4 +1,11 @@
-import type { MovementType, PermissionKey, Plan, StockStatus } from '@stockwise/shared';
+import type {
+  MovementType,
+  PaymentMethod,
+  PermissionKey,
+  Plan,
+  SaleStatus,
+  StockStatus,
+} from '@stockwise/shared';
 
 /** GET /me — drives navigation, permissions and formatting. */
 export interface Me {
@@ -152,4 +159,66 @@ export interface PurchaseDetail extends Omit<PurchaseSummary, 'supplier' | 'item
   supplier: Ref & { phone: string | null; leadTimeDays: number };
   createdBy: { id: string; fullName: string };
   items: PurchaseItem[];
+}
+
+export type { PaymentMethod, SaleStatus };
+
+/** GET /sales row. Selling amounts only: no costs. */
+export interface SaleSummary {
+  id: string;
+  reference: string;
+  status: SaleStatus;
+  paymentMethod: PaymentMethod;
+  customerName: string | null;
+  customerPhone: string | null;
+  subtotal: string;
+  discountTotal: string;
+  total: string;
+  returnedTotal: string;
+  /** total − refunds, or 0 once voided. */
+  netTotal: string;
+  soldAt: string;
+  voidedAt: string | null;
+  voidReason: string | null;
+  soldBy: { id: string; fullName: string };
+  itemCount: number;
+}
+
+export interface SaleItem {
+  id: string;
+  productId: string;
+  /** Name at the time of sale, as printed on the receipt. */
+  productName: string;
+  product: { id: string; name: string; sku: string; unit: string; allowFractional: boolean };
+  quantity: string;
+  quantityReturned: string;
+  quantityReturnable: string;
+  unitPrice: string;
+  discountAmount: string;
+  lineTotal: string;
+  // Only with products.view_cost
+  unitCost?: string;
+  lineCost?: string;
+}
+
+export interface SaleDetail extends Omit<SaleSummary, 'itemCount'> {
+  amountTendered: string | null;
+  changeDue: string | null;
+  notes: string | null;
+  voidedBy: { id: string; fullName: string } | null;
+  createdAt: string;
+  items: SaleItem[];
+  /** Only in the response to POST /sales. */
+  stockAfter?: { productId: string; quantityOnHand: string; stockStatus: StockStatus }[];
+}
+
+/** GET /business (the parts the sale screen and receipt use). */
+export interface BusinessProfile {
+  id: string;
+  name: string;
+  legalName: string | null;
+  nif: string | null;
+  address: string | null;
+  phone: string | null;
+  settings: { employeeMaxDiscountPercent: number };
 }

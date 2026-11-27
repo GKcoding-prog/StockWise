@@ -40,7 +40,10 @@
     "EXPIRED": "Expired",
     "LOST": "Lost",
     "OTHER": "Other",
-    "WRONG_ITEM": "Wrong item"
+    "WRONG_ITEM": "Wrong item",
+    "VOIDED": "Sale voided",
+    "DEFECTIVE": "Defective",
+    "CHANGED_MIND": "Changed mind"
   },
   "types": {
     "OPENING_BALANCE": "Opening stock",

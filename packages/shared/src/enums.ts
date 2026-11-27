@@ -56,6 +56,14 @@ export type WriteOffReason = (typeof WRITE_OFF_REASONS)[number];
 export const SUPPLIER_RETURN_REASONS = ['DAMAGED', 'WRONG_ITEM', 'EXPIRED', 'OTHER'] as const;
 export type SupplierReturnReason = (typeof SUPPLIER_RETURN_REASONS)[number];
 
+export const CUSTOMER_RETURN_REASONS = [
+  'DEFECTIVE',
+  'WRONG_ITEM',
+  'CHANGED_MIND',
+  'OTHER',
+] as const;
+export type CustomerReturnReason = (typeof CUSTOMER_RETURN_REASONS)[number];
+
 export const ADJUSTMENT_REASONS = [
   'COUNT_CORRECTION',
   'FOUND',

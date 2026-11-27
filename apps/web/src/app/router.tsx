@@ -33,6 +33,23 @@ export const router = createBrowserRouter([
             ...page(() => import('@/features/dashboard/DashboardPage'), 'DashboardPage'),
           },
           {
+            element: <RequirePermission perm="sales.create" />,
+            children: [
+              {
+                path: 'sales',
+                ...page(() => import('@/features/sales/SalesPage'), 'SalesPage'),
+              },
+              {
+                path: 'sales/new',
+                ...page(() => import('@/features/sales/NewSalePage'), 'NewSalePage'),
+              },
+              {
+                path: 'sales/:id',
+                ...page(() => import('@/features/sales/SaleDetailPage'), 'SaleDetailPage'),
+              },
+            ],
+          },
+          {
             element: <RequirePermission perm="products.view" />,
             children: [
               {

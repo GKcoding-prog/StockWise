@@ -38,3 +38,62 @@ dialog.sw-dialog::backdrop {
     @apply m-0 h-dvh max-h-none w-full max-w-none rounded-none border-0;
   }
 }
+
+/*
+ * Sale receipt (features/sales/Receipt.tsx). Hidden on screen; when printing a receipt,
+ * body.sw-printing hides the app so only the receipt prints. 80 mm thermal or A4.
+ */
+.sw-receipt {
+  display: none;
+}
+@media print {
+  body.sw-printing > :not(.sw-receipt) {
+    display: none !important;
+  }
+  body.sw-printing {
+    background: white;
+  }
+  body.sw-printing .sw-receipt {
+    display: block;
+    color: black;
+    font-size: 12px;
+    line-height: 1.35;
+  }
+  .sw-receipt-80mm {
+    width: 72mm;
+    font-family: ui-monospace, 'Courier New', monospace;
+  }
+  .sw-receipt-a4 {
+    width: 100%;
+    max-width: 160mm;
+    margin: 0 auto;
+    font-size: 13px;
+  }
+  .sw-receipt table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  .sw-receipt td {
+    padding: 1px 0;
+    vertical-align: top;
+  }
+  .sw-receipt hr {
+    border: 0;
+    border-top: 1px dashed black;
+    margin: 6px 0;
+  }
+  .sw-receipt-amount {
+    text-align: right;
+    white-space: nowrap;
+    padding-left: 8px;
+  }
+  .sw-receipt-center {
+    text-align: center;
+  }
+  .sw-receipt-title {
+    font-weight: 700;
+  }
+  .sw-receipt-muted {
+    color: #444;
+  }
+}

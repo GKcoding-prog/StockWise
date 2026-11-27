@@ -173,12 +173,14 @@ Each endpoint below lists the permission key from 03-roles §2. `auth` = any aut
 
 | Method | Path | Perm | Notes |
 |---|---|---|---|
-| GET | `/sales` | sales.create | Employee: own only unless `sales.view_all`. Filters `from`, `to`, `userId`, `paymentMethod`, `status`, `productId`, `q` |
-| GET | `/sales/:id` | sales.create | Same visibility rule |
-| POST | `/sales` | sales.create | **Idempotency-Key.** See §5 |
-| POST | `/sales/:id/void` | sales.void | `{reason}`; fails with `HAS_RETURNS` / `ALREADY_VOIDED` |
-| POST | `/sales/:id/returns` | sales.return | `{reason, lines:[{saleItemId, quantity}]}` |
-| GET | `/sales/:id/receipt?format=80mm|a4` | sales.create | HTML (print) or PDF receipt |
+| GET | `/sales` | sales.create | Employee: own only unless `sales.view_all` (a `userId` filter can't widen that). Filters `from`, `to`, `userId`, `paymentMethod`, `status`, `productId`, `q` (reference, customer name or phone). Rows include `netTotal` = total − refunds (0 once voided) |
+| GET | `/sales/:id` | sales.create | Same visibility rule (another user's sale → 404). Lines carry `quantityReturnable`; `unitCost`/`lineCost` only with `products.view_cost` |
+| GET | `/sales/:id/movements` | sales.create + inventory.view_movements | SALE, SALE_VOID and CUSTOMER_RETURN rows of this sale |
+| POST | `/sales` | sales.create | **Idempotency-Key required.** See §5. One line per product; `discountAmount` ≤ line amount; cash `amountTendered` ≥ total (`changeDue` computed), ignored for other methods. Employee limit: (price cut + line discount) ÷ line at selling price ≤ `employeeMaxDiscountPercent`, else `DISCOUNT_NOT_ALLOWED` with `{productId, maxPercent, requestedPercent}` |
+| POST | `/sales/:id/void` | sales.void | `{reason}`; only COMPLETED with no returns (`HAS_RETURNS`, `ALREADY_VOIDED`). SALE_VOID movements reverse each SALE row at its original cost (`reversalOfId`) |
+| POST | `/sales/:id/returns` | sales.return | `{reason: DEFECTIVE|WRONG_ITEM|CHANGED_MIND|OTHER, note?, lines:[{saleItemId, quantity}]}`; ≤ sold − returned (`OVER_RETURN`); voided → `INVALID_STATE_TRANSITION`; optional Idempotency-Key. Refund = line total pro rata (a full return refunds exactly the total); status → PARTIALLY_RETURNED / RETURNED |
+
+The receipt (80 mm / A4) is printed by the browser from the sale detail; a server-side PDF receipt is not built yet.
 
 ### 4.12 Analytics *(Business plan for recommendations, slow movers and anomaly review)*
 
